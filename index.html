@@ -7,14 +7,50 @@
   </head>
   <body>
     <header>See what s most popular between movies, people or tv shows</header>
-
+    <!-- Form section -->
+    <section id="form-section">
+      <form action="" method="get" id="form" name="form">
+        <fieldset>
+          <legend>Select by:</legend>
+          <div role="radiogroup" aria-labelledby="selection-label">
+            <label id="movie-label" for="movie">Movie</label>
+            <input
+              type="radio"
+              name="option"
+              id="movie"
+              value="song"
+              checked
+              aria-labelledby="movie"
+            />
+            <label id="tv-label" for="artist">Tv</label>
+            <input
+              type="radio"
+              name="option"
+              id="tv"
+              value="tv"
+              aria-labelledby="tv"
+            />
+            <label id="people-label" for="people">People</label>
+            <input
+              type="radio"
+              name="option"
+              id="people"
+              value="people"
+              aria-labelledby="people"
+            />
+          </div>
+          <label for="submit"></label>
+          <button type="submit" name="submit">Submit</button>
+        </fieldset>
+      </form>
+    </section>
     <footer>
       <!-- Credits -->
       <!-- <img
         src="/assets/2/v4/logos/v2/blue_long_2-9665a76b1ae401a510ec1e0ca40ddcb3b0cfe45f1d51b77a308fea0845885648.svg"
       /> -->
     </footer>
-    k
+
     <script src="config.js" type="module"></script>
     <script src="script.js" type="module"></script>
   </body>
