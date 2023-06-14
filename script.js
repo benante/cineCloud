@@ -1,6 +1,9 @@
 import { accessToken, apiKey } from "./config.js";
 
 const form = document.querySelector("form");
+const container = document.querySelector(".container");
+console.log(container);
+
 const rootUrl = "https://api.themoviedb.org/3/trending/";
 const queries = {
   movie: "movie/",
@@ -28,13 +31,19 @@ form.addEventListener("submit", (event) => {
 
   fetch(`${rootUrl}${queries[option]}${time}`, options)
     .then((response) => response.json())
-    .then((data) => data.results)
-    .then((res) => console.log(res))
-    //   .then((data) => {
-    //     for(let i = 0; i < data.lenght; i++) {
-    //         console.log()
-    //     }
-    //   })
+    .then((data) => {
+      const resultArray = data.results;
+      console.log(option);
+      resultArray.forEach((element) => {
+        const paragraph = document.createElement("p");
+        if (option == "movie") {
+          paragraph.textContent = element.title;
+        } else {
+          paragraph.textContent = element.name;
+        }
+        container.appendChild(paragraph);
+      });
+    })
 
     .catch((err) => console.error(err));
 });
