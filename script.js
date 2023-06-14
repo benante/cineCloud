@@ -1,5 +1,13 @@
 import { accessToken, apiKey } from "./config.js";
 
+const form = document.querySelector("form");
+const rootUrl = "https://api.themoviedb.org/3/trending/";
+const queries = {
+  movie: "movie/",
+  people: "person/",
+  tv: "tv/",
+};
+
 const options = {
   method: "GET",
   headers: {
