@@ -76,7 +76,7 @@ form.addEventListener("submit", (event) => {
                 const castArray = data.cast;
                 let lengthArray = 10;
                 if (castArray.length < lengthArray) {
-                  lengthArray = castArray.lenght;
+                  lengthArray = castArray.length;
                 }
 
                 // console.log(castArray);
