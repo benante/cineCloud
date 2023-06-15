@@ -45,7 +45,7 @@ form.addEventListener("submit", (event) => {
       container.innerHTML = "";
       //   iterate through the elements and display them
       resultArray.forEach((element) => {
-        console.log(element);
+        // console.log(element);
         // Create button that display name/title
         const item = document.createElement("div");
         const button = document.createElement("button");
@@ -63,19 +63,42 @@ form.addEventListener("submit", (event) => {
 
         button.addEventListener("click", () => {
           if (element.overview) {
-            const overview = element.overview;
-            paragraph.textContent = overview;
-            console.log(overview);
+            paragraph.textContent = element.overview;
+            console.log(element.overview);
+            // hello
+          } else {
+            fetch(
+              `https://api.themoviedb.org/3/person/${element.id}/combined_credits`,
+              options
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                const castArray = data.cast;
+                // console.log(castArray);
+                let movieList = ""; // Initialize an empty string to store the list
 
-            if (isParagraphVisible) {
-              // Hide the paragraph by removing it
-              item.removeChild(paragraph);
-              isParagraphVisible = false;
-            } else {
-              // Show the paragraph by appending it
-              item.appendChild(paragraph);
-              isParagraphVisible = true;
-            }
+                for (let i = 0; i < 10; i++) {
+                  const movie = `${castArray[i].title} (${
+                    castArray[i].character
+                  }) (${castArray[i].release_date.slice(0, 4)}) `;
+                  console.log(movie);
+                  movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
+                }
+
+                // Update content for buttons without element.overview
+                paragraph.innerHTML = `<ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
+              })
+              .catch((err) => console.error(err));
+          }
+
+          if (isParagraphVisible) {
+            // Hide the paragraph by removing it
+            item.removeChild(paragraph);
+            isParagraphVisible = false;
+          } else {
+            // Show the paragraph by appending it
+            item.appendChild(paragraph);
+            isParagraphVisible = true;
           }
         });
       });
