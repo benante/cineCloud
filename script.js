@@ -45,13 +45,39 @@ form.addEventListener("submit", (event) => {
       container.innerHTML = "";
       //   iterate through the elements and display them
       resultArray.forEach((element) => {
-        const paragraph = document.createElement("p");
+        console.log(element);
+        // Create button that display name/title
+        const item = document.createElement("div");
+        const button = document.createElement("button");
         if (option == "movie") {
-          paragraph.textContent = element.title;
+          button.textContent = element.title;
         } else {
-          paragraph.textContent = element.name;
+          button.textContent = element.name;
         }
-        container.appendChild(paragraph);
+        container.appendChild(item);
+        item.appendChild(button);
+
+        // for each button create relative container and content
+        const paragraph = document.createElement("p");
+        let isParagraphVisible = false;
+
+        button.addEventListener("click", () => {
+          if (element.overview) {
+            const overview = element.overview;
+            paragraph.textContent = overview;
+            console.log(overview);
+
+            if (isParagraphVisible) {
+              // Hide the paragraph by removing it
+              item.removeChild(paragraph);
+              isParagraphVisible = false;
+            } else {
+              // Show the paragraph by appending it
+              item.appendChild(paragraph);
+              isParagraphVisible = true;
+            }
+          }
+        });
       });
     })
 
