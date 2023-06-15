@@ -74,10 +74,15 @@ form.addEventListener("submit", (event) => {
               .then((res) => res.json())
               .then((data) => {
                 const castArray = data.cast;
+                let lengthArray = 10;
+                if (castArray.length < lengthArray) {
+                  lengthArray = castArray.lenght;
+                }
+
                 // console.log(castArray);
                 let movieList = ""; // Initialize an empty string to store the list
 
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < lengthArray; i++) {
                   const movie = `${castArray[i].title} (${
                     castArray[i].character
                   }) (${castArray[i].release_date.slice(0, 4)}) `;
@@ -88,7 +93,10 @@ form.addEventListener("submit", (event) => {
                 // Update content for buttons without element.overview
                 paragraph.innerHTML = `<ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
               })
-              .catch((err) => console.error(err));
+              .catch((error) => {
+                // Display an error message for the catch error
+                paragraph.textContent = `Error: ${error.message}`;
+              });
           }
 
           if (isParagraphVisible) {
@@ -104,5 +112,8 @@ form.addEventListener("submit", (event) => {
       });
     })
 
-    .catch((err) => console.error(err));
+    .catch((error) => {
+      // Display a general error message for the fetch error
+      container.innerHTML = `<p>Error: ${error.message}</p>`;
+    });
 });
