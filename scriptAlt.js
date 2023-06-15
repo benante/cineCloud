@@ -16,17 +16,17 @@ const queries = {
 // temp
 const result = [];
 
-const resultObject ={};
+const resultObject ={};  // used to save relevant info about films from multiple endpoints
 
 // Event listener when form is submitted
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", (event) => { // moved bulk of this to a function (fetchpopularmovies) so I can use async await
   event.preventDefault();
   // Get radio value
   fetchPopularMovies();
   
 })
 
-const options = {
+const options = { // moved out of popular movies func so any query can use it
     method: "GET",
     headers: {
       accept: "application/json",
@@ -57,21 +57,21 @@ async function fetchPopularMovies() {
         let title = ""
         if (option == "movie") {
             title = element.title;
-            let movieObj = {
+            let movieObj = {  // create an object with saving film id will be added to the overall object
                 id: element.id
             }
           paragraph.textContent = element.title;
-          resultObject[title] = movieObj
+          resultObject[title] = movieObj  // nest movie object in the result object with movie title as key have done like this to avoid for loop
           
         } else {
             title = element.name;
-            let movieObj = {
+            let movieObj = {  // exact same as in the if above
                 id: element.id
             }
-            resultObject[title] = movieObj;
+            resultObject[title] = movieObj; // exact same as in the if above
           paragraph.textContent = element.name;
         }
-        // paragraph.addEventListener("click",e => {  //
+        // paragraph.addEventListener("click",e => {  // fetch further details from api when  you click on a specific title (redundant)
         //   event.preventDefault();
         //   specificMovie(title)
         // })
@@ -83,20 +83,20 @@ async function fetchPopularMovies() {
 
 
     .catch((err) => console.error(err));   
-    revenueChart()
+    revenueChart()  // call api to get specific information about each film
 }
 
-async function specificMovie(name) {
+/* async function specificMovie(name) {  //
   console.log("here")
   await fetch(`https://api.themoviedb.org/3/movie/${resultObject[name].id}?language=en-US`, options)
   .then(response => response.json())
   .then(response => console.log(response))
   .catch(err => console.error(err));
-}
+} */
 
-function revenueChart() {
+function revenueChart() {  // gets revenue and budget of each film in result object
   // console.log(movieTitleArr);
-  let movieTitleArr = Object.keys(resultObject)
+  let movieTitleArr = Object.keys(resultObject) // make array from movietitles so we can use foreach to fetch further details on each film
    movieTitleArr.forEach(name => {
     fetch(`https://api.themoviedb.org/3/movie/${resultObject[name].id}?language=en-US`, options)
     .then(response => response.json())
@@ -111,8 +111,8 @@ function revenueChart() {
 const chartButton = document.getElementById("chartbutton")
 const chartImage = document.getElementById("chartimage")
 chartButton.addEventListener("click",fetchChart)
-async function fetchChart() {
-  let movieTitleArr = Object.keys(resultObject)
+function fetchChart() {  // creates chart image based on revenue
+  let movieTitleArr = Object.keys(resultObject) // 
   // await revenueChart(movieTitleArr)
   let nameArr = ""
   let revenueArr = "a:"
