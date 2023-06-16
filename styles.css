@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
+
+/* HTML & BODY  */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1em;
+  font-family: Inter, sans-serif;
+}
+
+fieldset {
+  line-height: 1.5;
+  background-color: #f6fa70;
+  min-height: 150px;
+}
+
+.container * {
+  margin-top: 0.5em;
+}
