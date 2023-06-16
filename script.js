@@ -48,7 +48,6 @@ async function fetchPopularMovies() {
     .then((data) => {
       // create an array from the data
       const resultArray = data.results;
-      console.log(radioValue);
       //    reset the div container everytime the form is submitted
       container.innerHTML = "";
       //   iterate through the elements and display them
@@ -85,6 +84,25 @@ async function fetchPopularMovies() {
           if (element.overview) {
             paragraph.textContent = element.overview;
             console.log(element.overview);
+
+            fetch(
+              `https://api.themoviedb.org/3/movie/${element.id}/videos`,
+              queryOptions
+            )
+              .then((res) => res.json())
+              .then((res) => res.results)
+              .then((res) => {
+                const arrayVideos = res;
+                let officialTrailer = arrayVideos.find(
+                  (element) => element.type === "Trailer"
+                );
+                officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
+                console.log(officialTrailer);
+                const iframeYoutube = document.createElement("iframe");
+                iframeYoutube.src = officialTrailer;
+                paragraph.appendChild(iframeYoutube);
+              });
+
             // hello
           } else {
             fetch(
@@ -150,7 +168,7 @@ async function fetchPopularMovies() {
         .then((response) => {
           resultObject[name].revenue = response.revenue;
           resultObject[name].budget = response.budget;
-          console.log(resultObject[name].revenue);
+          // console.log(resultObject[name].revenue);
         })
         .catch((err) => console.error(err));
     });
