@@ -43,3 +43,7 @@ button {
 .containerMovieDB button:hover {
   box-shadow: 5px 5px 0px;
 }
+
+ul {
+  list-style: circle;
+}
