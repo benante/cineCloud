@@ -7,11 +7,13 @@
     <title>CineCloud</title>
   </head>
   <body>
-    <header>See what' s most popular between movies, people or tv shows</header>
+    <header>
+      <h1>See what' s most popular between movies, people or tv shows</h1>
+    </header>
     <!-- Form section -->
     <section id="form-section">
       <form action="" method="get" id="form" name="form">
-        <fieldset>
+        <fieldset class="flex-column">
           <legend>Select by:</legend>
           <div role="radiogroup" aria-labelledby="selection-label">
             <label id="movie-label" for="movie">Movie</label>
@@ -54,11 +56,11 @@
     </section>
     <!-- Section results -->
     <section id="results">
-      <div class="container">
-        <p onclick="test()">The Flash</p>
+      <div class="containerMovieDB"></div>
+      <div class="containerChart flex-column">
+        <button id="chartbutton">fetch revenue chart</button>
+        <img id="chartimage" />
       </div>
-      <button id="chartbutton">fetch revenue chart</button>
-      <img id="chartimage" />
     </section>
     <footer>
       <!-- Credits -->

@@ -14,8 +14,32 @@ fieldset {
   line-height: 1.5;
   background-color: #f6fa70;
   min-height: 150px;
+  align-items: center;
 }
 
-.container * {
+fieldset,
+button {
+  border-radius: 5px;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.containerMovieDB * {
   margin-top: 0.5em;
+}
+.containerMovieDB button {
+  background-color: #19a7ce;
+  font-family: Inter, sans-serif;
+  padding: 1em;
+}
+.containerChart {
+  margin-top: 1em;
+}
+#chartbutton {
+  margin: auto;
+}
+.containerMovieDB button:hover {
+  box-shadow: 5px 5px 0px;
 }
