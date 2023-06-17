@@ -85,9 +85,12 @@ async function fetchPopularMovies() {
 
         // for each button create relative container and content
         const paragraph = document.createElement("p");
+        const posterImg = document.createElement("img");
         let isParagraphVisible = false;
+
         button.addEventListener("click", () => {
           if (element.overview) {
+            posterImg.src = `https://image.tmdb.org/t/p/original${element.poster_path}`;
             paragraph.textContent = element.overview;
           } else {
             fetch(
@@ -123,10 +126,12 @@ async function fetchPopularMovies() {
           if (isParagraphVisible) {
             // Hide the paragraph by removing it
             item.removeChild(paragraph);
+            item.removeChild(posterImg);
             isParagraphVisible = false;
           } else {
             // Show the paragraph by appending it
             item.appendChild(paragraph);
+            item.appendChild(posterImg);
             isParagraphVisible = true;
           }
         });

@@ -40,6 +40,9 @@ button {
   font-family: Inter, sans-serif;
   padding: 1em;
 }
+.containerMovieDB img {
+  width: 10em;
+}
 .containerChart {
   margin-top: 1em;
 }
