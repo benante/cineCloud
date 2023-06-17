@@ -4,6 +4,7 @@ import { accessToken, apiKey } from "./config.js";
 // define main html elements
 const form = document.querySelector("form");
 const containerMovieDB = document.querySelector(".containerMovieDB");
+const loadingDiv = document.querySelector(".loader");
 
 // define root and different queries
 const rootUrl = "https://api.themoviedb.org/3/trending/";
@@ -28,7 +29,12 @@ form.addEventListener("submit", (event) => {
   // moved bulk of this to a function (fetchpopularmovies) so I can use async await
   event.preventDefault();
   // Get radio value
-  fetchPopularMovies();
+
+  loadingPage(loadingDiv, 1950);
+
+  setTimeout(() => {
+    fetchPopularMovies();
+  }, 2000);
 });
 
 async function fetchPopularMovies() {
@@ -206,3 +212,11 @@ async function fetchPopularMovies() {
 // https://image-charts.com/chart?chan=1100%2CeaseInCirc&chd=a%0%652000000%396839759%5769331%431769198%171045464%0%2320250281%1308766975%3000000%0%208177026%0%0%417000000%805801000%0%475766228%0%375464627%2C&chl=The%20Flash|Fast%20X|Spider-Man:%20Across%20the%20Spider-Verse|Beau%20Is%20Afraid|John%20Wick:%20Chapter%204|Transformers:%20Rise%20of%20the%20Beasts|My%20Fault|Avatar:%20The%20Way%20of%20Water|The%20Super%20Mario%20Bros.%20Movie|Kandahar|Elemental|Dungeons%20&%20Dragons:%20Honor%20Among%20Thieves|Flamin%27%20Hot|Mission:%20Impossible%20-%20Dead%20Reckoning%20Part%20One|The%20Little%20Mermaid|Guardians%20of%20the%20Galaxy%20Vol.%203|Extraction%202|Ant-Man%20and%20the%20Wasp:%20Quantumania|Fear%20the%20Invisible%20Man|Spider-Man:%20Into%20the%20Spider-Verse|&chs=999x200&cht=bvs&chxt=y
 
 // https://image-charts.com/chart?chan=1100,easeInCirc&chd=a:0,652000000,396839759,5769331,431769198,171045464,0,2320250281,1308766975,3000000,0,208177026,0,0,417000000,805801000,0,475766228,0,375464627,&chl=The Flash|Fast X|Spider-Man: Across the Spider-Verse|Beau Is Afraid|John Wick: Chapter 4|Transformers: Rise of the Beasts|My Fault|Avatar: The Way of Water|The Super Mario Bros. Movie|Kandahar|Elemental|Dungeons & Dragons: Honor Among Thieves|Flamin' Hot|Mission: Impossible - Dead Reckoning Part One|The Little Mermaid|Guardians of the Galaxy Vol. 3|Extraction 2|Ant-Man and the Wasp: Quantumania|Fear the Invisible Man|Spider-Man: Into the Spider-Verse|&chs=999x200&cht=bvs&chxt=y
+
+function loadingPage(element, time) {
+  element.style.display = "block";
+
+  setTimeout(() => {
+    element.style.display = "none";
+  }, time);
+}
