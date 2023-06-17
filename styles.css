@@ -44,6 +44,7 @@ button {
   margin-top: 1em;
 }
 #chartbutton {
+  display: none;
   margin: auto;
   background-color: var(--green);
   padding: 1em;

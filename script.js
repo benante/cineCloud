@@ -5,6 +5,7 @@ import { accessToken, apiKey } from "./config.js";
 const form = document.querySelector("form");
 const containerMovieDB = document.querySelector(".containerMovieDB");
 const loadingDiv = document.querySelector(".loader");
+const chartBtn = document.querySelector("#chartbutton");
 
 // define root and different queries
 const rootUrl = "https://api.themoviedb.org/3/trending/";
@@ -157,6 +158,8 @@ async function fetchPopularMovies() {
           }
         });
       });
+      chartBtn.style.display = "block";
+
       revenueChart();
     })
 
@@ -184,9 +187,8 @@ async function fetchPopularMovies() {
         .catch((err) => console.error(err));
     });
   }
-  const chartButton = document.getElementById("chartbutton");
   const chartImage = document.getElementById("chartimage");
-  chartButton.addEventListener("click", fetchChart);
+  chartBtn.addEventListener("click", fetchChart);
   function fetchChart() {
     // creates chart image based on revenue
 
