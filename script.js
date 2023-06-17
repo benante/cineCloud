@@ -23,7 +23,7 @@ const queryOptions = {
   },
 };
 
-const resultObject = {}; // used to save relevant info about films from multiple endpoints
+const resultsObject = {}; // used to save relevant info about films from multiple endpoints
 
 // Event listener when form is submitted
 form.addEventListener("submit", (event) => {
@@ -46,8 +46,6 @@ async function fetchPopularMovies() {
   // Get dropdown value
   const dropdownValue = document.querySelector("#dropdown").value;
 
-  //
-
   await fetch(`${rootUrl}${queries[radioValue]}${dropdownValue}`, queryOptions)
     // get body in json format
     .then((response) => response.json())
@@ -58,33 +56,32 @@ async function fetchPopularMovies() {
       containerMovieDB.innerHTML = "";
       //   iterate through the elements and display them
       resultArray.forEach((element) => {
-        // console.log(element);
         // Create button that display name/title
         const item = document.createElement("div");
         const button = document.createElement("button");
         let title = "";
+
+        // create an object with saving film id will be added to the overall object
+        let movieObj = {
+          id: element.id,
+        };
+
+        // retrieve data according to radioValue
         if (radioValue == "movie") {
           title = element.title;
-          let movieObj = {
-            // create an object with saving film id will be added to the overall object
-            id: element.id,
-          };
           button.textContent = element.title;
-          resultObject[title] = movieObj; // nest movie object in the result object with movie title as key have done like this to avoid for loop
-          console.log("RESULT: " + resultObject[title].id);
         } else {
+          // in this case Tv shows or people
           title = element.name;
-          let movieObj = {
-            // exact same as in the if above
-            id: element.id,
-          };
-          resultObject[title] = movieObj; // exact same as in the if above
-          console.log("RESULT: " + resultObject[title].id);
-
           button.textContent = element.name;
         }
+
+        resultsObject[title] = movieObj; // insert object with relative id into resultObjects
+        console.log(movieObj);
         containerMovieDB.appendChild(item);
         item.appendChild(button);
+
+        // DEBUG/REFACTOR DONE AND WORKING TILL HERE
 
         // for each button create relative container and content
         const paragraph = document.createElement("p");
@@ -92,28 +89,6 @@ async function fetchPopularMovies() {
         button.addEventListener("click", () => {
           if (element.overview) {
             paragraph.textContent = element.overview;
-            // console.log(element.overview);
-
-            // YOUTUBE PERMISSION ISSUE
-            // fetch(
-            //   `https://api.themoviedb.org/3/movie/${element.id}/videos`,
-            //   queryOptions
-            // )
-            //   .then((res) => res.json())
-            //   .then((res) => res.results)
-            //   .then((res) => {
-            //     const arrayVideos = res;
-            //     let officialTrailer = arrayVideos.find(
-            //       (element) => element.type === "Trailer"
-            //     );
-            //     officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
-            //     console.log(officialTrailer);
-            //     const iframeYoutube = document.createElement("iframe");
-            //     iframeYoutube.src = officialTrailer;
-            //     paragraph.appendChild(iframeYoutube);
-            //   });
-
-            // hello
           } else {
             fetch(
               `https://api.themoviedb.org/3/person/${element.id}/combined_credits`,
@@ -127,14 +102,12 @@ async function fetchPopularMovies() {
                   lengthArray = castArray.length;
                 }
 
-                // console.log(castArray);
                 let movieList = ""; // Initialize an empty string to store the list
 
                 for (let i = 0; i < lengthArray; i++) {
                   const movie = `${castArray[i].title} (${
                     castArray[i].character
                   }) (${castArray[i].release_date.slice(0, 4)}) `;
-                  console.log("Movie" + movie);
                   movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
                 }
 
@@ -169,20 +142,17 @@ async function fetchPopularMovies() {
     });
   function revenueChart() {
     // gets revenue and budget of each film in result object
-    // console.log(movieTitleArr);
-    let movieTitleArr = Object.keys(resultObject); // make array from movietitles so we can use foreach to fetch further details on each film
+    let movieTitleArr = Object.keys(resultsObject); // make array from movietitles so we can use foreach to fetch further details on each film
     movieTitleArr.forEach((name) => {
       // NAME IS UNDEFINED
-      console.log("name" + name.id);
       fetch(
-        `https://api.themoviedb.org/3/movie/${resultObject[name].id}?language=en-US`,
+        `https://api.themoviedb.org/3/movie/${resultsObject[name].id}?language=en-US`,
         queryOptions
       )
         .then((response) => response.json())
         .then((response) => {
-          resultObject[name].revenue = response.revenue;
-          resultObject[name].budget = response.budget;
-          // console.log(resultObject[name].revenue);
+          resultsObject[name].revenue = response.revenue;
+          resultsObject[name].budget = response.budget;
         })
         .catch((err) => console.error(err));
     });
@@ -192,19 +162,18 @@ async function fetchPopularMovies() {
   function fetchChart() {
     // creates chart image based on revenue
 
-    let movieTitleArr = Object.keys(resultObject); //
+    let movieTitleArr = Object.keys(resultsObject); //
     // await revenueChart(movieTitleArr)
     let nameArr = "";
     let revenueArr = "a:";
     // let revenueLabel = ""
     movieTitleArr.forEach((name) => {
-      if (resultObject[name].revenue > 0) {
+      if (resultsObject[name].revenue > 0) {
         nameArr += `${name}|`;
-        revenueArr += `${resultObject[name].revenue},`;
+        revenueArr += `${resultsObject[name].revenue},`;
         // revenueLabel+= `$${resultObject[name].revenue}|`
       }
     });
-    console.log(revenueArr);
     const chartURL = `https:/image-charts.com/chart?chan=1100%2CeaseInCirc&chd=${revenueArr}&chl=${nameArr}&chs=999x200&cht=bvs&chxt=y`;
     chartImage.src = chartURL;
   }
@@ -222,3 +191,22 @@ function loadingPage(element, time) {
     element.style.display = "none";
   }, time);
 }
+
+// YOUTUBE PERMISSION ISSUE
+// fetch(
+//   `https://api.themoviedb.org/3/movie/${element.id}/videos`,
+//   queryOptions
+// )
+//   .then((res) => res.json())
+//   .then((res) => res.results)
+//   .then((res) => {
+//     const arrayVideos = res;
+//     let officialTrailer = arrayVideos.find(
+//       (element) => element.type === "Trailer"
+//     );
+//     officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
+//     console.log(officialTrailer);
+//     const iframeYoutube = document.createElement("iframe");
+//     iframeYoutube.src = officialTrailer;
+//     paragraph.appendChild(iframeYoutube);
+//   });
