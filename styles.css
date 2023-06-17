@@ -1,40 +1,42 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
 
+/* COLOURS VAR */
+:root {
+  --yellow: #f6fa70;
+  --light-blue: #0079ff;
+  --green: #00dfa2;
+  --cyan: #19a7ce;
+}
 /* HTML & BODY  */
 * {
   box-sizing: border-box;
+  font-family: Inter, sans-serif;
 }
 
 body {
   margin: 1em;
-  font-family: Inter, sans-serif;
 }
 
+/* FORM & FIELDSET & BUTTONS */
 fieldset {
   font-size: 1.5em;
   line-height: 1.5;
-  background-color: #f6fa70;
+  background-color: var(--yellow);
   min-height: 150px;
   align-items: center;
 }
-
+fieldset button {
+  background-color: var(--light-blue);
+  color: white;
+  font-weight: 600;
+}
 fieldset,
 button {
   border-radius: 5px;
 }
-.flex {
-  display: flex;
-}
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  /* gap: 0.2em; */
-}
-/* .containerMovieDB * {
-  margin-top: 0.5em;
-} */
+
 .containerMovieDB button {
-  background-color: #19a7ce;
+  background-color: var(--cyan);
   font-family: Inter, sans-serif;
   padding: 1em;
 }
@@ -43,10 +45,18 @@ button {
 }
 #chartbutton {
   margin: auto;
+  background-color: var(--green);
+  padding: 1em;
 }
+#chartbutton:hover,
 .containerMovieDB button:hover,
 .containerMovieDB button:focus {
   box-shadow: 5px 5px 0px;
+}
+
+/* PARAGRAPH */
+p {
+  text-align: justify;
 }
 
 ul {
@@ -56,9 +66,21 @@ ul {
   width: 90%;
 }
 
+/* PRIMITIVES */
+
+/* Margins */
 .stack-sm > * {
   margin-top: 0.2em;
 }
 .stack-mid > * {
   margin-top: 0.8rem;
+}
+
+/* display */
+.flex {
+  display: flex;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
 }
