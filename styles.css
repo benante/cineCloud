@@ -11,6 +11,7 @@ body {
 }
 
 fieldset {
+  font-size: 1.5em;
   line-height: 1.5;
   background-color: #f6fa70;
   min-height: 150px;
@@ -21,14 +22,17 @@ fieldset,
 button {
   border-radius: 5px;
 }
-
+.flex {
+  display: flex;
+}
 .flex-column {
   display: flex;
   flex-direction: column;
+  /* gap: 0.2em; */
 }
-.containerMovieDB * {
+/* .containerMovieDB * {
   margin-top: 0.5em;
-}
+} */
 .containerMovieDB button {
   background-color: #19a7ce;
   font-family: Inter, sans-serif;
@@ -40,10 +44,21 @@ button {
 #chartbutton {
   margin: auto;
 }
-.containerMovieDB button:hover {
+.containerMovieDB button:hover,
+.containerMovieDB button:focus {
   box-shadow: 5px 5px 0px;
 }
 
 ul {
   list-style: circle;
+}
+#chartimage {
+  width: 90%;
+}
+
+.stack-sm > * {
+  margin-top: 0.2em;
+}
+.stack-mid > * {
+  margin-top: 0.8rem;
 }

@@ -14,7 +14,6 @@ const queries = {
 };
 
 const queryOptions = {
-  // moved out of popular movies func so any query can use it
   method: "GET",
   headers: {
     accept: "application/json",
@@ -65,6 +64,7 @@ async function fetchPopularMovies() {
           };
           button.textContent = element.title;
           resultObject[title] = movieObj; // nest movie object in the result object with movie title as key have done like this to avoid for loop
+          console.log("RESULT: " + resultObject[title].id);
         } else {
           title = element.name;
           let movieObj = {
@@ -72,6 +72,8 @@ async function fetchPopularMovies() {
             id: element.id,
           };
           resultObject[title] = movieObj; // exact same as in the if above
+          console.log("RESULT: " + resultObject[title].id);
+
           button.textContent = element.name;
         }
         containerMovieDB.appendChild(item);
@@ -83,8 +85,9 @@ async function fetchPopularMovies() {
         button.addEventListener("click", () => {
           if (element.overview) {
             paragraph.textContent = element.overview;
-            console.log(element.overview);
+            // console.log(element.overview);
 
+            // YOUTUBE PERMISSION ISSUE
             // fetch(
             //   `https://api.themoviedb.org/3/movie/${element.id}/videos`,
             //   queryOptions
@@ -124,7 +127,7 @@ async function fetchPopularMovies() {
                   const movie = `${castArray[i].title} (${
                     castArray[i].character
                   }) (${castArray[i].release_date.slice(0, 4)}) `;
-                  console.log(movie);
+                  console.log("Movie" + movie);
                   movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
                 }
 
@@ -160,6 +163,8 @@ async function fetchPopularMovies() {
     // console.log(movieTitleArr);
     let movieTitleArr = Object.keys(resultObject); // make array from movietitles so we can use foreach to fetch further details on each film
     movieTitleArr.forEach((name) => {
+      // NAME IS UNDEFINED
+      console.log("name" + name.id);
       fetch(
         `https://api.themoviedb.org/3/movie/${resultObject[name].id}?language=en-US`,
         queryOptions

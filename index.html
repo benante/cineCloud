@@ -13,9 +13,9 @@
     <!-- Form section -->
     <section id="form-section">
       <form action="" method="get" id="form" name="form">
-        <fieldset class="flex-column">
+        <fieldset class="flex-column stack-sm">
           <legend>Select by:</legend>
-          <div role="radiogroup" aria-labelledby="selection-label">
+          <div class="flex" role="radiogroup" aria-labelledby="selection-label">
             <label id="movie-label" for="movie">Movie</label>
             <input
               type="radio"
@@ -56,7 +56,7 @@
     </section>
     <!-- Section results -->
     <section id="results">
-      <div class="containerMovieDB"></div>
+      <div class="containerMovieDB stack-mid"></div>
       <div class="containerChart flex-column">
         <button id="chartbutton">fetch revenue chart</button>
         <img id="chartimage" />
