@@ -126,9 +126,9 @@ async function fetchPopularMovies() {
                     )})</li>`;
                   })
                   .join("");
-
                 // Update content for buttons without element.overview
                 paragraph.innerHTML = `<ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
+                posterImg.src = `https://image.tmdb.org/t/p/original${element.profile_path}`;
               })
               .catch((error) => {
                 // Display an error message for the catch error
