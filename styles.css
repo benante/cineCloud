@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
+
+/* COLOURS VAR */
+:root {
+  --yellow: #f6fa70;
+  --light-blue: #0079ff;
+  --green: #00dfa2;
+  --cyan: #19a7ce;
+}
+/* HTML & BODY  */
+* {
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+}
+
+body {
+  margin: 1em;
+}
+
+/* FORM & FIELDSET & BUTTONS */
+fieldset {
+  font-size: 1.5em;
+  line-height: 1.5;
+  background-color: var(--yellow);
+  min-height: 150px;
+  align-items: center;
+}
+fieldset button {
+  background-color: var(--light-blue);
+  color: white;
+  font-weight: 600;
+}
+fieldset,
+button {
+  border-radius: 5px;
+}
+
+.containerMovieDB button {
+  background-color: var(--cyan);
+  font-family: Inter, sans-serif;
+  padding: 1em;
+}
+.containerMovieDB img {
+  width: 10em;
+}
+.containerChart {
+  margin-top: 1em;
+}
+#chartbutton {
+  display: none;
+  margin: auto;
+  background-color: var(--green);
+  padding: 1em;
+}
+#chartbutton:hover,
+.containerMovieDB button:hover,
+.containerMovieDB button:focus {
+  box-shadow: 5px 5px 0px;
+}
+
+/* PARAGRAPH */
+p {
+  text-align: justify;
+}
+
+ul {
+  list-style: circle;
+}
+#chartimage {
+  width: 90%;
+}
+
+/* ANIMATION */
+.loader {
+  display: none;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 160px;
+  height: 160px;
+  animation: spin 2s linear infinite;
+  margin: 2em auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* PRIMITIVES */
+
+/* Margins */
+.stack-sm > * {
+  margin-top: 0.2em;
+}
+.stack-mid > * {
+  margin-top: 0.8rem;
+}
+
+/* display */
+.flex {
+  display: flex;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* DIVS */
+@media screen and (min-width: 500px) {
+  .containerChart {
+    display: grid;
+    justify-items: center;
+  }
+  .containerMovieDB {
+    display: grid;
+    justify-items: center;
+  }
+  .containerMovieDB > div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 50%;
+    align-items: center;
+  }
+  fieldset {
+    font-size: 1.8em;
+  }
+  fieldset button {
+    padding: 10px;
+    font-size: 0.6em;
+  }
+  .containerMovieDB button {
+    font-size: 1.2rem;
+  }
+}

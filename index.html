@@ -3,16 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
     <title>CineCloud</title>
   </head>
   <body>
-    <header>See what' s most popular between movies, people or tv shows</header>
+    <header>
+      <h1>See what' s most popular between movies, people or tv shows</h1>
+    </header>
     <!-- Form section -->
     <section id="form-section">
       <form action="" method="get" id="form" name="form">
-        <fieldset>
+        <fieldset class="flex-column stack-sm">
           <legend>Select by:</legend>
-          <div role="radiogroup" aria-labelledby="selection-label">
+          <div class="flex" role="radiogroup" aria-labelledby="selection-label">
             <label id="movie-label" for="movie">Movie</label>
             <input
               type="radio"
@@ -53,7 +56,12 @@
     </section>
     <!-- Section results -->
     <section id="results">
-      <div class="container"></div>
+      <div class="loader"></div>
+      <div class="containerMovieDB stack-mid"></div>
+      <div class="containerChart flex-column stack-mid">
+        <button id="chartbutton">fetch revenue chart</button>
+        <img id="chartimage" />
+      </div>
     </section>
     <footer>
       <!-- Credits -->
