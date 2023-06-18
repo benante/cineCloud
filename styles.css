@@ -109,3 +109,32 @@ ul {
   display: flex;
   flex-direction: column;
 }
+
+/* DIVS */
+@media screen and (min-width: 500px) {
+  .containerChart {
+    display: grid;
+    justify-items: center;
+  }
+  .containerMovieDB {
+    display: grid;
+    justify-items: center;
+  }
+  .containerMovieDB > div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 50%;
+    align-items: center;
+  }
+  fieldset {
+    font-size: 1.8em;
+  }
+  fieldset button {
+    padding: 10px;
+    font-size: 0.6em;
+  }
+  .containerMovieDB button {
+    font-size: 1.2rem;
+  }
+}

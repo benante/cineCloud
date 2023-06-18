@@ -57,7 +57,8 @@ async function fetchPopularMovies() {
       //   iterate through the elements and display them
       resultArray.forEach((element) => {
         // Create button that display name/title
-        const item = document.createElement("div");
+        const divElement = document.createElement("div");
+        divElement.classList.add = "divElement";
         const button = document.createElement("button");
         let title = "";
 
@@ -78,8 +79,8 @@ async function fetchPopularMovies() {
 
         resultsObject[title] = movieObj; // insert object with relative id into resultObjects
         console.log(movieObj);
-        containerMovieDB.appendChild(item);
-        item.appendChild(button);
+        containerMovieDB.appendChild(divElement);
+        divElement.appendChild(button);
 
         // DEBUG/REFACTOR DONE AND WORKING TILL HERE
 
@@ -127,7 +128,7 @@ async function fetchPopularMovies() {
                   })
                   .join("");
                 // Update content for buttons without element.overview
-                paragraph.innerHTML = `<p>Known for:</p><ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
+                paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
                 posterImg.src = `https://image.tmdb.org/t/p/original${element.profile_path}`;
               })
               .catch((error) => {
@@ -138,13 +139,13 @@ async function fetchPopularMovies() {
 
           if (isParagraphVisible) {
             // Hide the paragraph by removing it
-            item.removeChild(paragraph);
-            item.removeChild(posterImg);
+            divElement.removeChild(paragraph);
+            divElement.removeChild(posterImg);
             isParagraphVisible = false;
           } else {
             // Show the paragraph by appending it
-            item.appendChild(paragraph);
-            item.appendChild(posterImg);
+            divElement.appendChild(paragraph);
+            divElement.appendChild(posterImg);
             isParagraphVisible = true;
           }
         });
