@@ -56,7 +56,6 @@ async function fetchPopularMovies() {
       containerMovieDB.innerHTML = "";
       //   iterate through the elements and display them
       resultArray.forEach((element) => {
-        console.log(element);
         // Create button that display name/title
         const item = document.createElement("div");
         const button = document.createElement("button");
@@ -114,20 +113,21 @@ async function fetchPopularMovies() {
                 //   }) (${castArray[i].release_date.slice(0, 4)}) `;
                 //   movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
                 // }
-                const castArray = data.cast;
+                let castArray = data.cast;
+
+                if (!castArray.length) {
+                  castArray = data.crew;
+                }
                 const lengthArray = Math.min(10, castArray.length);
 
                 const movieList = castArray
                   .slice(0, lengthArray)
-                  .map(({ title, character, release_date }) => {
-                    return `<li>${title} (${character}) (${release_date.slice(
-                      0,
-                      4
-                    )})</li>`;
+                  .map(({ title, release_date }) => {
+                    return `<li>${title} (${release_date.slice(0, 4)})</li>`;
                   })
                   .join("");
                 // Update content for buttons without element.overview
-                paragraph.innerHTML = `<ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
+                paragraph.innerHTML = `<p>Known for:</p><ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
                 posterImg.src = `https://image.tmdb.org/t/p/original${element.profile_path}`;
               })
               .catch((error) => {
