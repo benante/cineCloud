@@ -56,6 +56,7 @@ async function fetchPopularMovies() {
       containerMovieDB.innerHTML = "";
       //   iterate through the elements and display them
       resultArray.forEach((element) => {
+        console.log(element);
         // Create button that display name/title
         const item = document.createElement("div");
         const button = document.createElement("button");
@@ -99,20 +100,32 @@ async function fetchPopularMovies() {
             )
               .then((res) => res.json())
               .then((data) => {
+                // const castArray = data.cast;
+                // let lengthArray = 10;
+                // if (castArray.length < lengthArray) {
+                //   lengthArray = castArray.length;
+                // }
+
+                // let movieList = ""; // Initialize an empty string to store the list
+
+                // for (let i = 0; i < lengthArray; i++) {
+                //   const movie = `${castArray[i].title} (${
+                //     castArray[i].character
+                //   }) (${castArray[i].release_date.slice(0, 4)}) `;
+                //   movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
+                // }
                 const castArray = data.cast;
-                let lengthArray = 10;
-                if (castArray.length < lengthArray) {
-                  lengthArray = castArray.length;
-                }
+                const lengthArray = Math.min(10, castArray.length);
 
-                let movieList = ""; // Initialize an empty string to store the list
-
-                for (let i = 0; i < lengthArray; i++) {
-                  const movie = `${castArray[i].title} (${
-                    castArray[i].character
-                  }) (${castArray[i].release_date.slice(0, 4)}) `;
-                  movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
-                }
+                const movieList = castArray
+                  .slice(0, lengthArray)
+                  .map(({ title, character, release_date }) => {
+                    return `<li>${title} (${character}) (${release_date.slice(
+                      0,
+                      4
+                    )})</li>`;
+                  })
+                  .join("");
 
                 // Update content for buttons without element.overview
                 paragraph.innerHTML = `<ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
