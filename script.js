@@ -23,19 +23,25 @@ const queryOptions = {
   },
 };
 
-const resultsObject = {}; // used to save relevant info about films from multiple endpoints
+let resultsObject = {}; // used to save relevant info about films from multiple endpoints
 
 // Event listener when form is submitted
 form.addEventListener("submit", (event) => {
   // moved bulk of this to a function (fetchpopularmovies) so I can use async await
   event.preventDefault();
+  resultsObject = {}
   // Get radio value
-
+// -------------------- 
+// Have commented out for testing
+  /* 
   loadingPage(loadingDiv, 1950);
 
   setTimeout(() => {
     fetchPopularMovies();
-  }, 2000);
+  }, 2000); */
+  fetchPopularMovies();
+// uncomment when done
+// ---------------
 });
 
 async function fetchPopularMovies() {
@@ -78,7 +84,7 @@ async function fetchPopularMovies() {
         }
 
         resultsObject[title] = movieObj; // insert object with relative id into resultObjects
-        console.log(movieObj);
+        // console.log(movieObj);
         containerMovieDB.appendChild(divElement);
         divElement.appendChild(button);
 
@@ -162,16 +168,35 @@ async function fetchPopularMovies() {
   function revenueChart() {
     // gets revenue and budget of each film in result object
     let movieTitleArr = Object.keys(resultsObject); // make array from movietitles so we can use foreach to fetch further details on each film
+    console.log(movieTitleArr)
+    let mutableRadioValue = radioValue
+    if (radioValue == 'people') {
+      mutableRadioValue = 'person'
+    }
     movieTitleArr.forEach((name) => {
       // NAME IS UNDEFINED
       fetch(
-        `https://api.themoviedb.org/3/movie/${resultsObject[name].id}?language=en-US`,
+        `https://api.themoviedb.org/3/${mutableRadioValue}/${resultsObject[name].id}?language=en-US`,
         queryOptions
       )
         .then((response) => response.json())
         .then((response) => {
-          resultsObject[name].revenue = response.revenue;
-          resultsObject[name].budget = response.budget;
+          if (radioValue == 'movie') {
+            resultsObject[name].revenue = response.revenue;
+            resultsObject[name].budget = response.budget;
+            resultsObject[name].revenueRatio = resultsObject[name].revenue-resultsObject[name].budget
+          }
+          else if (radioValue == 'tv') {
+            resultsObject[name].revenueRatio = response.number_of_episodes;
+            resultsObject[name].budget = response.budget;
+            // console.log(resultsObject[name].revenueRatio)
+          }
+          else {
+            resultsObject[name].revenueRatio = getAge(response.birthday,response.deathday);
+            resultsObject[name].budget = response.deathday;
+            
+            // console.log(resultsObject[name].revenueRatio)
+          }
         })
         .catch((err) => console.error(err));
     });
@@ -184,18 +209,63 @@ async function fetchPopularMovies() {
     let movieTitleArr = Object.keys(resultsObject); //
     // await revenueChart(movieTitleArr)
     let nameArr = "";
-    let revenueArr = "a:";
+    let dataGroup = "a"
+    let revenueArr = `${dataGroup}:`;
+    let chartTitle = "";
+    let chartType = "bvs";
     // let revenueLabel = ""
-    movieTitleArr.forEach((name) => {
-      if (resultsObject[name].revenue > 0) {
-        nameArr += `${name}|`;
-        revenueArr += `${resultsObject[name].revenue},`;
-        // revenueLabel+= `$${resultObject[name].revenue}|`
-      }
-    });
-    const chartURL = `https:/image-charts.com/chart?chan=1100%2CeaseInCirc&chd=${revenueArr}&chl=${nameArr}&chs=999x200&cht=bvs&chxt=y`;
+    if (radioValue == 'movie') {
+      chartTitle = "Net revenue";
+      movieTitleArr.forEach((name) => {
+        // if (resultsObject[name].revenue > 0) {
+          // nameArr += `${name}|`;
+          revenueArr += `${resultsObject[name].revenueRatio},`;
+          // revenueLabel+= `$${resultObject[name].revenue}|`;
+        // }
+      });
+    }
+    else if (radioValue == 'tv') {
+      chartTitle = "Number of episodes";
+      movieTitleArr.forEach((name) => {
+        if (resultsObject[name].revenueRatio > 0) {
+          // nameArr += `${name}|`;
+          revenueArr += `${resultsObject[name].revenueRatio},`;
+          // revenueLabel+= `$${resultObject[name].revenue}|`;
+        }
+      });
+    }
+    else {
+      // chartType = 'p';
+      chartTitle = "Age";
+      movieTitleArr.forEach((name) => {
+        if (resultsObject[name].revenueRatio > 0) {
+          // nameArr += `${name}|`;
+          revenueArr += `${resultsObject[name].revenueRatio},`;
+          // revenueLabel+= `$${resultObject[name].revenue}|`;
+        }
+      });
+    }
+    // console.log(radioValue)
+    const chartURL = `https:/image-charts.com/chart?chco=FF0000|00FF00|0000FF|FFFF00|00FFFF|FF00FF|FF8000|008080|800080|FF7F50|DC143C|000080|00CED1|FFD700|FF1493|7FFF00|9932CC|FF4500|20B2AA|800000&chtt=${chartTitle}&chd=${revenueArr}&chl=${nameArr}&chs=999x200&cht=${chartType}&chxt=y`;
     chartImage.src = chartURL;
   }
+}
+
+function getAge(birthDateString,deathDateString) {
+  let today = 0;
+  if (deathDateString) {
+      today = new Date(deathDateString);
+  }
+  else {
+      today = new Date();
+  }
+  let birthDate = new Date(birthDateString);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  let m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
 }
 // `https:/image-charts.com/chart?chan=1100%2CeaseInCirc&chd=a%${revenueArr}2C&chl=${nameArr}&chs=999x200&cht=bvs&chxt=y`
 
