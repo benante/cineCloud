@@ -86,13 +86,22 @@ async function fetchPopularMovies() {
 
         // chart key placeholder
         const chartKey = document.createElement("div");
-        chartKey.style.width = "30px";
-        chartKey.style.height = "30px";
-        chartKey.style.borderRadius = "100px";
+        // chartKey.style.cssText = `
+        // width: 15px;
+        // height: 15px;
+        // border-radius: 100px;
+        // background-color: #${resultsObject[title].colour};
+        // display: none;
+        // `;
+        chartKey.classList.add("chartColourIndicator");
+        // chartKey.style.width = "15px";
+        // chartKey.style.height = "15px";
+        // chartKey.style.borderRadius = "100px";
         chartKey.style.backgroundColor = `#${resultsObject[title].colour}`;
+        // chartKey.style.display = "none";
         divElement.appendChild(chartKey)   // add colour key to each movie this is placeholder should do with a small circle next to button
         //
-
+        
         // DEBUG/REFACTOR DONE AND WORKING TILL HERE
 
         // for each button create relative container and content
@@ -251,6 +260,8 @@ async function fetchPopularMovies() {
     // console.log(radioValue)
     const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
     chartImage.src = chartURL;
+    let chartColourIndicator = document.getElementsByClassName("chartColourIndicator");
+    [...chartColourIndicator].forEach(e => e.style.display = "inline-block");
   }
 }
 

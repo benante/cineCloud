@@ -138,3 +138,20 @@ ul {
     font-size: 1.2rem;
   }
 }
+
+.chartColourIndicator {
+  width: 15px;
+  height: 15px;
+  border-radius: 100px;
+  display: none;
+  position: relative;
+  left: 30px;
+}
+
+.containerMovieDB > div {
+  flex-direction: unset;
+  flex-wrap: wrap;
+  /* width: 50%; */
+  align-items: center;
+  justify-content: center;
+}
