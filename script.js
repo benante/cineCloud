@@ -60,6 +60,7 @@ async function fetchPopularMovies() {
         const divElement = document.createElement("div");
         divElement.classList.add = "divElement";
         const button = document.createElement("button");
+        
         let title = "";
 
         // create an object with saving film id will be added to the overall object
@@ -82,6 +83,15 @@ async function fetchPopularMovies() {
         // console.log(movieObj);
         containerMovieDB.appendChild(divElement);
         divElement.appendChild(button);
+
+        // chart key placeholder
+        const chartKey = document.createElement("div");
+        chartKey.style.width = "30px";
+        chartKey.style.height = "30px";
+        chartKey.style.borderRadius = "100px";
+        chartKey.style.backgroundColor = `#${resultsObject[title].colour}`;
+        divElement.appendChild(chartKey)   // add colour key to each movie this is placeholder should do with a small circle next to button
+        //
 
         // DEBUG/REFACTOR DONE AND WORKING TILL HERE
 
