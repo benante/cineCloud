@@ -31,17 +31,11 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   resultsObject = {}
   // Get radio value
-// -------------------- 
-// Have commented out for testing
-  /* 
   loadingPage(loadingDiv, 1950);
 
   setTimeout(() => {
     fetchPopularMovies();
-  }, 2000); */
-  fetchPopularMovies();
-// uncomment when done
-// ---------------
+  }, 2000);
 });
 
 async function fetchPopularMovies() {
