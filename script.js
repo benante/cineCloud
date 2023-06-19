@@ -6,7 +6,7 @@ const form = document.querySelector("form");
 const containerMovieDB = document.querySelector(".containerMovieDB");
 const loadingDiv = document.querySelector(".loader");
 const chartBtn = document.querySelector("#chartbutton");
-
+const colourArray = ["FF0000","00FF00","0000FF","FFFF00","00FFFF","FF00FF","FF8000","008080","800080","FF7F50","DC143C","000080","00CED1","FFD700","FF1493","7FFF00","9932CC","FF4500","20B2AA","800000"]
 // define root and different queries
 const rootUrl = "https://api.themoviedb.org/3/trending/";
 const queries = {
@@ -61,7 +61,7 @@ async function fetchPopularMovies() {
       //    reset the div container everytime the form is submitted
       containerMovieDB.innerHTML = "";
       //   iterate through the elements and display them
-      resultArray.forEach((element) => {
+      resultArray.forEach((element,i) => {
         // Create button that display name/title
         const divElement = document.createElement("div");
         divElement.classList.add = "divElement";
@@ -82,8 +82,9 @@ async function fetchPopularMovies() {
           title = element.name;
           button.textContent = element.name;
         }
-
+        
         resultsObject[title] = movieObj; // insert object with relative id into resultObjects
+        resultsObject[title].colour = colourArray[i];
         // console.log(movieObj);
         containerMovieDB.appendChild(divElement);
         divElement.appendChild(button);
@@ -182,19 +183,14 @@ async function fetchPopularMovies() {
         .then((response) => response.json())
         .then((response) => {
           if (radioValue == 'movie') {
-            resultsObject[name].revenue = response.revenue;
-            resultsObject[name].budget = response.budget;
-            resultsObject[name].revenueRatio = resultsObject[name].revenue-resultsObject[name].budget
+            resultsObject[name].data = (Math.round((response.revenue-response.budget)/100000)/10)
           }
           else if (radioValue == 'tv') {
-            resultsObject[name].revenueRatio = response.number_of_episodes;
-            resultsObject[name].budget = response.budget;
+            resultsObject[name].data = response.number_of_episodes;
             // console.log(resultsObject[name].revenueRatio)
           }
           else {
-            resultsObject[name].revenueRatio = getAge(response.birthday,response.deathday);
-            resultsObject[name].budget = response.deathday;
-            
+            resultsObject[name].data = getAge(response.birthday,response.deathday);            
             // console.log(resultsObject[name].revenueRatio)
           }
         })
@@ -205,21 +201,22 @@ async function fetchPopularMovies() {
   chartBtn.addEventListener("click", fetchChart);
   function fetchChart() {
     // creates chart image based on revenue
-
     let movieTitleArr = Object.keys(resultsObject); //
     // await revenueChart(movieTitleArr)
-    let nameArr = "";
-    let dataGroup = "a"
-    let revenueArr = `${dataGroup}:`;
+    let dataLabel = "";
+    let dataString = "a:";
     let chartTitle = "";
     let chartType = "bvs";
-    // let revenueLabel = ""
+    let colourString = colourArray.join("|");
+    // chartType = "bhg"
+    console.log(window.innerWidth)
     if (radioValue == 'movie') {
-      chartTitle = "Net revenue";
+      chartTitle = "Net revenue (millions)";
       movieTitleArr.forEach((name) => {
         // if (resultsObject[name].revenue > 0) {
           // nameArr += `${name}|`;
-          revenueArr += `${resultsObject[name].revenueRatio},`;
+          dataString += `${resultsObject[name].data},`;
+          dataLabel += `${resultsObject[name].data}|`
           // revenueLabel+= `$${resultObject[name].revenue}|`;
         // }
       });
@@ -227,10 +224,9 @@ async function fetchPopularMovies() {
     else if (radioValue == 'tv') {
       chartTitle = "Number of episodes";
       movieTitleArr.forEach((name) => {
-        if (resultsObject[name].revenueRatio > 0) {
-          // nameArr += `${name}|`;
-          revenueArr += `${resultsObject[name].revenueRatio},`;
-          // revenueLabel+= `$${resultObject[name].revenue}|`;
+        if (resultsObject[name].data > 0) {
+          dataString += `${resultsObject[name].data},`;
+          dataLabel += `${resultsObject[name].data}|`
         }
       });
     }
@@ -238,15 +234,18 @@ async function fetchPopularMovies() {
       // chartType = 'p';
       chartTitle = "Age";
       movieTitleArr.forEach((name) => {
-        if (resultsObject[name].revenueRatio > 0) {
-          // nameArr += `${name}|`;
-          revenueArr += `${resultsObject[name].revenueRatio},`;
-          // revenueLabel+= `$${resultObject[name].revenue}|`;
+        if (resultsObject[name].data > 0) {
+          dataString += `${resultsObject[name].data},`;
+          dataLabel += `${resultsObject[name].data}|`
         }
       });
     }
+    if (window.innerWidth < 500){
+      chartType = "p";
+      dataLabel += `&chdl=${dataLabel}`;
+     }
     // console.log(radioValue)
-    const chartURL = `https:/image-charts.com/chart?chco=FF0000|00FF00|0000FF|FFFF00|00FFFF|FF00FF|FF8000|008080|800080|FF7F50|DC143C|000080|00CED1|FFD700|FF1493|7FFF00|9932CC|FF4500|20B2AA|800000&chtt=${chartTitle}&chd=${revenueArr}&chl=${nameArr}&chs=999x200&cht=${chartType}&chxt=y`;
+    const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
     chartImage.src = chartURL;
   }
 }
@@ -267,11 +266,6 @@ function getAge(birthDateString,deathDateString) {
   }
   return age;
 }
-// `https:/image-charts.com/chart?chan=1100%2CeaseInCirc&chd=a%${revenueArr}2C&chl=${nameArr}&chs=999x200&cht=bvs&chxt=y`
-
-// https://image-charts.com/chart?chan=1100%2CeaseInCirc&chd=a%0%652000000%396839759%5769331%431769198%171045464%0%2320250281%1308766975%3000000%0%208177026%0%0%417000000%805801000%0%475766228%0%375464627%2C&chl=The%20Flash|Fast%20X|Spider-Man:%20Across%20the%20Spider-Verse|Beau%20Is%20Afraid|John%20Wick:%20Chapter%204|Transformers:%20Rise%20of%20the%20Beasts|My%20Fault|Avatar:%20The%20Way%20of%20Water|The%20Super%20Mario%20Bros.%20Movie|Kandahar|Elemental|Dungeons%20&%20Dragons:%20Honor%20Among%20Thieves|Flamin%27%20Hot|Mission:%20Impossible%20-%20Dead%20Reckoning%20Part%20One|The%20Little%20Mermaid|Guardians%20of%20the%20Galaxy%20Vol.%203|Extraction%202|Ant-Man%20and%20the%20Wasp:%20Quantumania|Fear%20the%20Invisible%20Man|Spider-Man:%20Into%20the%20Spider-Verse|&chs=999x200&cht=bvs&chxt=y
-
-// https://image-charts.com/chart?chan=1100,easeInCirc&chd=a:0,652000000,396839759,5769331,431769198,171045464,0,2320250281,1308766975,3000000,0,208177026,0,0,417000000,805801000,0,475766228,0,375464627,&chl=The Flash|Fast X|Spider-Man: Across the Spider-Verse|Beau Is Afraid|John Wick: Chapter 4|Transformers: Rise of the Beasts|My Fault|Avatar: The Way of Water|The Super Mario Bros. Movie|Kandahar|Elemental|Dungeons & Dragons: Honor Among Thieves|Flamin' Hot|Mission: Impossible - Dead Reckoning Part One|The Little Mermaid|Guardians of the Galaxy Vol. 3|Extraction 2|Ant-Man and the Wasp: Quantumania|Fear the Invisible Man|Spider-Man: Into the Spider-Verse|&chs=999x200&cht=bvs&chxt=y
 
 function loadingPage(element, time) {
   element.style.display = "block";
