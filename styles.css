@@ -148,32 +148,23 @@ ul {
   left: 30px;
 }
 
-.containerMovieDB > div {
-  flex-direction: unset;
-  flex-wrap: wrap;
-  /* width: 50%; */
-  align-items: center;
-  justify-content: center;
-}
-
 /* Footer */
 footer {
   position: absolute;
   bottom: 0px;
   left: 0px;
-  right: 0px;
-  display: flex;
-  justify-content: space-between;
-  font-size: small;
+  font-size: 0.7em;
+  width: 100%;
 }
-
+footer>p {
+  text-align: center;
+}
 #tmdbAttribute {
   height: fit-content;
   position: relative;
-  top: 22px;
+  top: 0.5em;
 }
-
 #tmdbAttribute>img {
-  width: 50px;
+  width: 3.5em;
   height: auto;
 }
