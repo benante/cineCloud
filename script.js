@@ -24,12 +24,15 @@ const queryOptions = {
 };
 
 let resultsObject = {}; // used to save relevant info about films from multiple endpoints
+const chartImage = document.getElementById("chartimage");
+
 
 // Event listener when form is submitted
 form.addEventListener("submit", (event) => {
   // moved bulk of this to a function (fetchpopularmovies) so I can use async await
   event.preventDefault();
   resultsObject = {}
+  chartImage.style.display = "none"; // hides chart when new data requested
   // Get radio value
   loadingPage(loadingDiv, 1950);
 
@@ -86,13 +89,22 @@ async function fetchPopularMovies() {
 
         // chart key placeholder
         const chartKey = document.createElement("div");
-        chartKey.style.width = "30px";
-        chartKey.style.height = "30px";
-        chartKey.style.borderRadius = "100px";
+        // chartKey.style.cssText = `
+        // width: 15px;
+        // height: 15px;
+        // border-radius: 100px;
+        // background-color: #${resultsObject[title].colour};
+        // display: none;
+        // `;
+        chartKey.classList.add("chartColourIndicator");
+        // chartKey.style.width = "15px";
+        // chartKey.style.height = "15px";
+        // chartKey.style.borderRadius = "100px";
         chartKey.style.backgroundColor = `#${resultsObject[title].colour}`;
+        // chartKey.style.display = "none";
         divElement.appendChild(chartKey)   // add colour key to each movie this is placeholder should do with a small circle next to button
         //
-
+        
         // DEBUG/REFACTOR DONE AND WORKING TILL HERE
 
         // for each button create relative container and content
@@ -201,7 +213,7 @@ async function fetchPopularMovies() {
         .catch((err) => console.error(err));
     });
   }
-  const chartImage = document.getElementById("chartimage");
+  
   chartBtn.addEventListener("click", fetchChart);
   function fetchChart() {
     // creates chart image based on revenue
@@ -251,6 +263,14 @@ async function fetchPopularMovies() {
     // console.log(radioValue)
     const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
     chartImage.src = chartURL;
+    chartImage.style.display = "inline-block";
+    let chartColourIndicator = document.getElementsByClassName("chartColourIndicator");
+    let rightAdjust = (window.innerWidth/2) + (window.innerWidth/8);
+    console.log(rightAdjust);
+    [...chartColourIndicator].forEach(e => {
+      e.style.left = `${rightAdjust}px`
+      e.style.display = "inline-block"
+    });
   }
 }
 

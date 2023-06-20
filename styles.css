@@ -138,3 +138,12 @@ ul {
     font-size: 1.2rem;
   }
 }
+
+.chartColourIndicator {
+  width: 15px;
+  height: 15px;
+  border-radius: 100px;
+  display: none;
+  position: absolute;
+  transform: translateY(21px);
+}
