@@ -145,6 +145,5 @@ ul {
   border-radius: 100px;
   display: none;
   position: absolute;
-  right: 500px;
-  transform: translateY(30px);
+  transform: translateY(21px);
 }

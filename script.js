@@ -265,7 +265,12 @@ async function fetchPopularMovies() {
     chartImage.src = chartURL;
     chartImage.style.display = "inline-block";
     let chartColourIndicator = document.getElementsByClassName("chartColourIndicator");
-    [...chartColourIndicator].forEach(e => e.style.display = "inline-block");
+    let rightAdjust = (window.innerWidth/2) + (window.innerWidth/8);
+    console.log(rightAdjust);
+    [...chartColourIndicator].forEach(e => {
+      e.style.left = `${rightAdjust}px`
+      e.style.display = "inline-block"
+    });
   }
 }
 
