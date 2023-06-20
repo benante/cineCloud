@@ -6,7 +6,28 @@ const form = document.querySelector("form");
 const containerMovieDB = document.querySelector(".containerMovieDB");
 const loadingDiv = document.querySelector(".loader");
 const chartBtn = document.querySelector("#chartbutton");
-const colourArray = ["FF0000","00FF00","0000FF","FFFF00","00FFFF","FF00FF","FF8000","008080","800080","FF7F50","DC143C","000080","00CED1","FFD700","FF1493","7FFF00","9932CC","FF4500","20B2AA","800000"]
+const colourArray = [
+  "FF0000",
+  "00FF00",
+  "0000FF",
+  "FFFF00",
+  "00FFFF",
+  "FF00FF",
+  "FF8000",
+  "008080",
+  "800080",
+  "FF7F50",
+  "DC143C",
+  "000080",
+  "00CED1",
+  "FFD700",
+  "FF1493",
+  "7FFF00",
+  "9932CC",
+  "FF4500",
+  "20B2AA",
+  "800000",
+];
 // define root and different queries
 const rootUrl = "https://api.themoviedb.org/3/trending/";
 const queries = {
@@ -26,12 +47,11 @@ const queryOptions = {
 let resultsObject = {}; // used to save relevant info about films from multiple endpoints
 const chartImage = document.getElementById("chartimage");
 
-
 // Event listener when form is submitted
 form.addEventListener("submit", (event) => {
   // moved bulk of this to a function (fetchpopularmovies) so I can use async await
   event.preventDefault();
-  resultsObject = {}
+  resultsObject = {};
   chartImage.style.display = "none"; // hides chart when new data requested
   // Get radio value
   loadingPage(loadingDiv, 1950);
@@ -58,12 +78,12 @@ async function fetchPopularMovies() {
       //    reset the div container everytime the form is submitted
       containerMovieDB.innerHTML = "";
       //   iterate through the elements and display them
-      resultArray.forEach((element,i) => {
+      resultArray.forEach((element, i) => {
         // Create button that display name/title
         const divElement = document.createElement("div");
         divElement.classList.add = "divElement";
         const button = document.createElement("button");
-        
+
         let title = "";
 
         // create an object with saving film id will be added to the overall object
@@ -80,7 +100,7 @@ async function fetchPopularMovies() {
           title = element.name;
           button.textContent = element.name;
         }
-        
+
         resultsObject[title] = movieObj; // insert object with relative id into resultObjects
         resultsObject[title].colour = colourArray[i];
         // console.log(movieObj);
@@ -102,9 +122,9 @@ async function fetchPopularMovies() {
         // chartKey.style.borderRadius = "100px";
         chartKey.style.backgroundColor = `#${resultsObject[title].colour}`;
         // chartKey.style.display = "none";
-        divElement.appendChild(chartKey)   // add colour key to each movie this is placeholder should do with a small circle next to button
+        divElement.appendChild(chartKey); // add colour key to each movie this is placeholder should do with a small circle next to button
         //
-        
+
         // DEBUG/REFACTOR DONE AND WORKING TILL HERE
 
         // for each button create relative container and content
@@ -114,8 +134,29 @@ async function fetchPopularMovies() {
 
         button.addEventListener("click", () => {
           if (element.overview) {
+            // If movie or tv
             posterImg.src = `https://image.tmdb.org/t/p/original${element.poster_path}`;
             paragraph.textContent = element.overview;
+            //  YOUTUBE
+            const mediaType = element.media_type;
+            fetch(
+              `https://api.themoviedb.org/3/${mediaType}/${element.id}/videos`,
+              queryOptions
+            )
+              .then((res) => res.json())
+              .then((res) => res.results)
+              .then((res) => {
+                const arrayVideos = res;
+                let officialTrailer = arrayVideos.find(
+                  (element) => element.type === "Trailer"
+                );
+                officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
+                const linkYoutube = document.createElement("a");
+                linkYoutube.textContent = "Click here for the trailer";
+                linkYoutube.href = officialTrailer;
+                paragraph.appendChild(linkYoutube);
+              })
+              .catch((err) => console.error(err));
           } else {
             fetch(
               `https://api.themoviedb.org/3/person/${element.id}/combined_credits`,
@@ -123,20 +164,6 @@ async function fetchPopularMovies() {
             )
               .then((res) => res.json())
               .then((data) => {
-                // const castArray = data.cast;
-                // let lengthArray = 10;
-                // if (castArray.length < lengthArray) {
-                //   lengthArray = castArray.length;
-                // }
-
-                // let movieList = ""; // Initialize an empty string to store the list
-
-                // for (let i = 0; i < lengthArray; i++) {
-                //   const movie = `${castArray[i].title} (${
-                //     castArray[i].character
-                //   }) (${castArray[i].release_date.slice(0, 4)}) `;
-                //   movieList += `<li>${movie}</li>`; // Append each movie as an <li> element to the list
-                // }
                 let castArray = data.cast;
 
                 if (!castArray.length) {
@@ -185,10 +212,10 @@ async function fetchPopularMovies() {
   function revenueChart() {
     // gets revenue and budget of each film in result object
     let movieTitleArr = Object.keys(resultsObject); // make array from movietitles so we can use foreach to fetch further details on each film
-    console.log(movieTitleArr)
-    let mutableRadioValue = radioValue
-    if (radioValue == 'people') {
-      mutableRadioValue = 'person'
+    console.log(movieTitleArr);
+    let mutableRadioValue = radioValue;
+    if (radioValue == "people") {
+      mutableRadioValue = "person";
     }
     movieTitleArr.forEach((name) => {
       // NAME IS UNDEFINED
@@ -198,22 +225,24 @@ async function fetchPopularMovies() {
       )
         .then((response) => response.json())
         .then((response) => {
-          if (radioValue == 'movie') {
-            resultsObject[name].data = (Math.round((response.revenue-response.budget)/100000)/10)
-          }
-          else if (radioValue == 'tv') {
+          if (radioValue == "movie") {
+            resultsObject[name].data =
+              Math.round((response.revenue - response.budget) / 100000) / 10;
+          } else if (radioValue == "tv") {
             resultsObject[name].data = response.number_of_episodes;
             // console.log(resultsObject[name].revenueRatio)
-          }
-          else {
-            resultsObject[name].data = getAge(response.birthday,response.deathday);            
+          } else {
+            resultsObject[name].data = getAge(
+              response.birthday,
+              response.deathday
+            );
             // console.log(resultsObject[name].revenueRatio)
           }
         })
         .catch((err) => console.error(err));
     });
   }
-  
+
   chartBtn.addEventListener("click", fetchChart);
   function fetchChart() {
     // creates chart image based on revenue
@@ -225,68 +254,67 @@ async function fetchPopularMovies() {
     let chartType = "bvs";
     let colourString = colourArray.join("|");
     // chartType = "bhg"
-    console.log(window.innerWidth)
-    if (radioValue == 'movie') {
+    console.log(window.innerWidth);
+    if (radioValue == "movie") {
       chartTitle = "Net revenue (millions)";
       movieTitleArr.forEach((name) => {
         // if (resultsObject[name].revenue > 0) {
-          // nameArr += `${name}|`;
-          dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`
-          // revenueLabel+= `$${resultObject[name].revenue}|`;
+        // nameArr += `${name}|`;
+        dataString += `${resultsObject[name].data},`;
+        dataLabel += `${resultsObject[name].data}|`;
+        // revenueLabel+= `$${resultObject[name].revenue}|`;
         // }
       });
-    }
-    else if (radioValue == 'tv') {
+    } else if (radioValue == "tv") {
       chartTitle = "Number of episodes";
       movieTitleArr.forEach((name) => {
         if (resultsObject[name].data > 0) {
           dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`
+          dataLabel += `${resultsObject[name].data}|`;
         }
       });
-    }
-    else {
+    } else {
       // chartType = 'p';
       chartTitle = "Age";
       movieTitleArr.forEach((name) => {
         if (resultsObject[name].data > 0) {
           dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`
+          dataLabel += `${resultsObject[name].data}|`;
         }
       });
     }
-    if (window.innerWidth < 500){
+    if (window.innerWidth < 500) {
       chartType = "p";
       dataLabel += `&chdl=${dataLabel}`;
-     }
+    }
     // console.log(radioValue)
     const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
     chartImage.src = chartURL;
     chartImage.style.display = "inline-block";
-    let chartColourIndicator = document.getElementsByClassName("chartColourIndicator");
-    let rightAdjust = (window.innerWidth/2) + (window.innerWidth/8);
+    let chartColourIndicator = document.getElementsByClassName(
+      "chartColourIndicator"
+    );
+    let rightAdjust = window.innerWidth / 2 + window.innerWidth / 8;
     console.log(rightAdjust);
-    [...chartColourIndicator].forEach(e => {
-      e.style.left = `${rightAdjust}px`
-      e.style.display = "inline-block"
+    [...chartColourIndicator].forEach((e) => {
+      e.style.left = `${rightAdjust}px`;
+      e.style.display = "inline-block";
     });
   }
 }
 
-function getAge(birthDateString,deathDateString) {
+function getAge(birthDateString, deathDateString) {
   let today = 0;
   if (deathDateString) {
-      today = new Date(deathDateString);
-  }
-  else {
-      today = new Date();
+    today = new Date(deathDateString);
+  } else {
+    today = new Date();
   }
   let birthDate = new Date(birthDateString);
   let age = today.getFullYear() - birthDate.getFullYear();
   let m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
+    age--;
   }
   return age;
 }
@@ -298,22 +326,3 @@ function loadingPage(element, time) {
     element.style.display = "none";
   }, time);
 }
-
-// YOUTUBE PERMISSION ISSUE
-// fetch(
-//   `https://api.themoviedb.org/3/movie/${element.id}/videos`,
-//   queryOptions
-// )
-//   .then((res) => res.json())
-//   .then((res) => res.results)
-//   .then((res) => {
-//     const arrayVideos = res;
-//     let officialTrailer = arrayVideos.find(
-//       (element) => element.type === "Trailer"
-//     );
-//     officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
-//     console.log(officialTrailer);
-//     const iframeYoutube = document.createElement("iframe");
-//     iframeYoutube.src = officialTrailer;
-//     paragraph.appendChild(iframeYoutube);
-//   });
