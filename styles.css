@@ -155,3 +155,25 @@ ul {
   align-items: center;
   justify-content: center;
 }
+
+/* Footer */
+footer {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  display: flex;
+  justify-content: space-between;
+  font-size: small;
+}
+
+#tmdbAttribute {
+  height: fit-content;
+  position: relative;
+  top: 22px;
+}
+
+#tmdbAttribute>img {
+  width: 50px;
+  height: auto;
+}
