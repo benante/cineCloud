@@ -15,8 +15,6 @@
 
 body {
   margin: 1em;
-  position: relative; 
-  min-height: 95vh;
 }
 
 /* FORM & FIELDSET & BUTTONS */
@@ -43,7 +41,7 @@ button {
   padding: 1em;
 }
 .containerMovieDB img {
-  width: 10em;
+  max-width: 10em;
 }
 .containerChart {
   margin-top: 1em;
@@ -64,12 +62,16 @@ button {
 p {
   text-align: justify;
 }
-
+p a {
+  display: block;
+}
 ul {
   list-style: circle;
 }
 #chartimage {
   width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ANIMATION */
@@ -106,6 +108,7 @@ ul {
 /* display */
 .flex {
   display: flex;
+  align-items: center;
 }
 .flex-column {
   display: flex;
@@ -126,8 +129,12 @@ ul {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    width: 50%;
+    max-width: 35rem;
+    font-size: 1.2em;
     align-items: center;
+  }
+  .containerMovieDB img {
+    max-width: 15em;
   }
   fieldset {
     font-size: 1.8em;
@@ -139,6 +146,9 @@ ul {
   .containerMovieDB button {
     font-size: 1.2rem;
   }
+  #chartimage {
+    max-width: 70%;
+  }
 }
 
 .chartColourIndicator {
@@ -146,27 +156,15 @@ ul {
   height: 15px;
   border-radius: 100px;
   display: none;
-  position: relative;
-  left: 30px;
+  position: absolute;
+  transform: translateY(21px);
 }
 
-/* Footer */
-footer {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  font-size: 0.7em;
-  width: 100%;
-}
-footer>p {
-  text-align: center;
-}
-#tmdbAttribute {
-  height: fit-content;
-  position: relative;
-  top: 0.5em;
-}
-#tmdbAttribute>img {
-  width: 3.5em;
-  height: auto;
+.chartKeyColour {
+  display: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 10px;
+  border: 1px solid;
+  margin-left: 0.5em;
 }
