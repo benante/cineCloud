@@ -253,32 +253,14 @@ async function fetchPopularMovies() {
     console.log(window.innerWidth);
     if (radioValue == "movie") {
       chartTitle = "Net revenue (millions)";
-      movieTitleArr.forEach((name) => {
-        // if (resultsObject[name].revenue > 0) {
-        // nameArr += `${name}|`;
-        dataString += `${resultsObject[name].data},`;
-        dataLabel += `${resultsObject[name].data}|`;
-        // revenueLabel+= `$${resultObject[name].revenue}|`;
-        // }
-      });
     } else if (radioValue == "tv") {
       chartTitle = "Number of episodes";
-      movieTitleArr.forEach((name) => {
-        if (resultsObject[name].data > 0) {
-          dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`;
-        }
-      });
     } else {
       // chartType = 'p';
       chartTitle = "Age";
-      movieTitleArr.forEach((name) => {
-        if (resultsObject[name].data > 0) {
-          dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`;
-        }
-      });
     }
+    dataString += objectToString(",",movieTitleArr,"data",resultsObject);
+    dataLabel += objectToString("|",movieTitleArr,"data",resultsObject);
     if (window.innerWidth < 500) {
       chartType = "p";
       dataLabel += `&chdl=${dataLabel}`;
@@ -287,16 +269,14 @@ async function fetchPopularMovies() {
     const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
     chartImage.src = chartURL;
     chartImage.style.display = "inline-block";
-    let chartColourIndicator = document.getElementsByClassName(
-      "chartColourIndicator"
-    );
-    let rightAdjust = window.innerWidth / 2 + window.innerWidth / 8;
-    console.log(rightAdjust);
-    [...chartColourIndicator].forEach((e) => {
-      e.style.left = `${rightAdjust}px`;
-      e.style.display = "inline-block";
-    });
   }
+}
+
+function objectToString(seperator,objectKeys,objectData,object) {
+  return objectKeys.reduce((acc,curr) => {
+      acc += `${object[curr][objectData]}${seperator}`;
+      return acc
+  },"")
 }
 
 function getAge(birthDateString, deathDateString) {
