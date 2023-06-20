@@ -82,7 +82,7 @@ async function fetchPopularMovies() {
         // Create button that display name/title
         const divElement = document.createElement("div");
         divElement.classList.add = "divElement";
-        const titleWrapper = document.createElement("div");
+
         const chartKeyColour = document.createElement("div");
         const button = document.createElement("button");
 
@@ -107,10 +107,8 @@ async function fetchPopularMovies() {
         resultsObject[title].colour = colourArray[i];
         // console.log(movieObj);
         containerMovieDB.appendChild(divElement);
-        divElement.appendChild(titleWrapper);
-        titleWrapper.appendChild(button);
-        titleWrapper.appendChild(chartKeyColour);
-        titleWrapper.classList.add("flex");
+        divElement.appendChild(button);
+        button.appendChild(chartKeyColour);
 
         chartKeyColour.classList.add("chartKeyColour");
         chartKeyColour.style.backgroundColor = `#${resultsObject[title].colour}`;
@@ -237,6 +235,12 @@ async function fetchPopularMovies() {
 
   chartBtn.addEventListener("click", fetchChart);
   function fetchChart() {
+    const chartKeyColours = document.getElementsByClassName("chartKeyColour");
+
+    // Loop through the chartKeyColour elements and set their display property
+    for (let i = 0; i < chartKeyColours.length; i++) {
+      chartKeyColours[i].style.display = "inline-block";
+    }
     // creates chart image based on revenue
     let movieTitleArr = Object.keys(resultsObject); //
     // await revenueChart(movieTitleArr)

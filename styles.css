@@ -68,6 +68,8 @@ ul {
 }
 #chartimage {
   width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ANIMATION */
@@ -104,6 +106,7 @@ ul {
 /* display */
 .flex {
   display: flex;
+  align-items: center;
 }
 .flex-column {
   display: flex;
@@ -153,4 +156,6 @@ ul {
   width: 15px;
   height: 15px;
   border-radius: 10px;
+  border: 1px solid;
+  margin-left: 0.5em;
 }
