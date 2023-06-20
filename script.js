@@ -82,6 +82,8 @@ async function fetchPopularMovies() {
         // Create button that display name/title
         const divElement = document.createElement("div");
         divElement.classList.add = "divElement";
+        const titleWrapper = document.createElement("div");
+        const chartKeyColour = document.createElement("div");
         const button = document.createElement("button");
 
         let title = "";
@@ -105,24 +107,14 @@ async function fetchPopularMovies() {
         resultsObject[title].colour = colourArray[i];
         // console.log(movieObj);
         containerMovieDB.appendChild(divElement);
-        divElement.appendChild(button);
+        divElement.appendChild(titleWrapper);
+        titleWrapper.appendChild(button);
+        titleWrapper.appendChild(chartKeyColour);
+        titleWrapper.classList.add("flex");
 
-        // chart key placeholder
-        const chartKey = document.createElement("div");
-        // chartKey.style.cssText = `
-        // width: 15px;
-        // height: 15px;
-        // border-radius: 100px;
-        // background-color: #${resultsObject[title].colour};
-        // display: none;
-        // `;
-        chartKey.classList.add("chartColourIndicator");
-        // chartKey.style.width = "15px";
-        // chartKey.style.height = "15px";
-        // chartKey.style.borderRadius = "100px";
-        chartKey.style.backgroundColor = `#${resultsObject[title].colour}`;
-        // chartKey.style.display = "none";
-        divElement.appendChild(chartKey); // add colour key to each movie this is placeholder should do with a small circle next to button
+        chartKeyColour.classList.add("chartKeyColour");
+        chartKeyColour.style.backgroundColor = `#${resultsObject[title].colour}`;
+        // add colour key to each movie this is placeholder should do with a small circle next to button
         //
 
         // DEBUG/REFACTOR DONE AND WORKING TILL HERE

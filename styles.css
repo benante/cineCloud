@@ -147,3 +147,10 @@ ul {
   position: absolute;
   transform: translateY(21px);
 }
+
+.chartKeyColour {
+  display: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 10px;
+}
