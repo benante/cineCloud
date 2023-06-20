@@ -144,14 +144,7 @@ ul {
   height: 15px;
   border-radius: 100px;
   display: none;
-  position: relative;
-  left: 30px;
-}
-
-.containerMovieDB > div {
-  flex-direction: unset;
-  flex-wrap: wrap;
-  /* width: 50%; */
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  right: 500px;
+  transform: translateY(30px);
 }
