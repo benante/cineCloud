@@ -15,6 +15,8 @@
 
 body {
   margin: 1em;
+  position: relative;
+  min-height: 95vh;
 }
 
 /* FORM & FIELDSET & BUTTONS */
@@ -156,8 +158,29 @@ ul {
   height: 15px;
   border-radius: 100px;
   display: none;
+  position: relative;
+  left: 30px;
+}
+
+/* Footer */
+footer {
   position: absolute;
-  transform: translateY(21px);
+  bottom: 0px;
+  left: 0px;
+  font-size: 0.7em;
+  width: 100%;
+}
+footer > p {
+  text-align: center;
+}
+#tmdbAttribute {
+  height: fit-content;
+  position: relative;
+  top: 0.5em;
+}
+#tmdbAttribute > img {
+  width: 3.5em;
+  height: auto;
 }
 
 .chartKeyColour {
