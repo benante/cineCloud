@@ -103,8 +103,6 @@ async function fetchPopularMovies() {
     chartKeyColour.classList.add("chartKeyColour");
     chartKeyColour.style.backgroundColor = `#${resultsObject[title].colour}`;
 
-    // DEBUG/REFACTOR DONE AND WORKING TILL HERE
-
     // for each button create relative container and content
     const paragraph = document.createElement("p");
     const posterImg = document.createElement("img");
