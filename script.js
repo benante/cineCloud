@@ -45,8 +45,8 @@ const queryOptions = {
 };
 
 let resultsObject = {}; // used to save relevant info about films from multiple endpoints
+let radioValue
 const chartImage = document.getElementById("chartimage");
-
 // Event listener when form is submitted
 form.addEventListener("submit", (event) => {
   // moved bulk of this to a function (fetchpopularmovies) so I can use async await
@@ -62,10 +62,10 @@ form.addEventListener("submit", (event) => {
 });
 
 async function fetchPopularMovies() {
-  const radioValue = document.querySelector(
+  radioValue = document.querySelector(
     'input[name="option"]:checked'
   ).value;
-
+    console.log(radioValue)
   // Get dropdown value
   const dropdownValue = document.querySelector("#dropdown").value;
 
@@ -125,7 +125,7 @@ async function fetchPopularMovies() {
         button.addEventListener("click", () => {
           if (element.overview) {
             // If movie or tv
-            posterImg.src = `https://image.tmdb.org/t/p/original${element.poster_path}`;
+            posterImg.src = `https://image.tmdb.org/t/p/original${element.poster_path}?language=en-US`;
             paragraph.textContent = element.overview;
             //  YOUTUBE
             const mediaType = element.media_type;
@@ -169,7 +169,7 @@ async function fetchPopularMovies() {
                   .join("");
                 // Update content for buttons without element.overview
                 paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
-                posterImg.src = `https://image.tmdb.org/t/p/original${element.profile_path}`;
+                posterImg.src = `https://image.tmdb.org/t/p/original${element.profile_path}?language=en-US`;
               })
               .catch((error) => {
                 // Display an error message for the catch error
@@ -191,87 +191,85 @@ async function fetchPopularMovies() {
         });
       });
       chartBtn.style.display = "block";
-
       revenueChart();
     })
-
     .catch((error) => {
       // Display a general error message for the fetch error
       containerMovieDB.innerHTML = `<p>Error: ${error.message}</p>`;
     });
-  function revenueChart() {
-    // gets revenue and budget of each film in result object
-    let movieTitleArr = Object.keys(resultsObject); // make array from movietitles so we can use foreach to fetch further details on each film
-    console.log(movieTitleArr);
-    let mutableRadioValue = radioValue;
-    if (radioValue == "people") {
-      mutableRadioValue = "person";
-    }
-    movieTitleArr.forEach((name) => {
-      // NAME IS UNDEFINED
-      fetch(
-        `https://api.themoviedb.org/3/${mutableRadioValue}/${resultsObject[name].id}?language=en-US`,
-        queryOptions
-      )
-        .then((response) => response.json())
-        .then((response) => {
-          if (radioValue == "movie") {
-            resultsObject[name].data =
-              Math.round((response.revenue - response.budget) / 100000) / 10;
-          } else if (radioValue == "tv") {
-            resultsObject[name].data = response.number_of_episodes;
-            // console.log(resultsObject[name].revenueRatio)
-          } else {
-            resultsObject[name].data = getAge(
-              response.birthday,
-              response.deathday
-            );
-            // console.log(resultsObject[name].revenueRatio)
-          }
-        })
-        .catch((err) => console.error(err));
-    });
+}
+
+async function revenueChart() {
+  let movieTitleArr = Object.keys(resultsObject);
+  console.log(movieTitleArr);
+  let mutableRadioValue = radioValue;
+  if (radioValue == "people") {
+    mutableRadioValue = "person";
   }
-
-  chartBtn.addEventListener("click", fetchChart);
-  function fetchChart() {
-    const chartKeyColours = document.getElementsByClassName("chartKeyColour");
-
-    // Loop through the chartKeyColour elements and set their display property
-    for (let i = 0; i < chartKeyColours.length; i++) {
-      chartKeyColours[i].style.display = "inline-block";
-    }
-    // creates chart image based on revenue
-    let movieTitleArr = Object.keys(resultsObject); //
-    // await revenueChart(movieTitleArr)
-    let dataLabel = "";
-    let dataString = "a:";
-    let chartTitle = "";
-    let chartType = "bvs";
-    let colourString = colourArray.join("|");
-    // chartType = "bhg"
-    console.log(window.innerWidth);
+  for (let name of movieTitleArr) {
+    let response = await movieAPIFetch(
+      mutableRadioValue,
+      resultsObject[name].id,
+    );
+      console.log(response)
     if (radioValue == "movie") {
-      chartTitle = "Net revenue (millions)";
+      resultsObject[name].data =
+        Math.round((response.revenue - response.budget) / 100000) / 10;
     } else if (radioValue == "tv") {
-      chartTitle = "Number of episodes";
+      resultsObject[name].data = response.number_of_episodes;
     } else {
-      // chartType = 'p';
-      chartTitle = "Age";
+      resultsObject[name].data = getAge(response.birthday, response.deathday);
     }
-    dataString += objectToString(",",movieTitleArr,"data",resultsObject);
-    dataLabel += objectToString("|",movieTitleArr,"data",resultsObject);
-    if (window.innerWidth < 500) {
-      chartType = "p";
-      dataLabel += `&chdl=${dataLabel}`;
-    }
-    // console.log(radioValue)
-    const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
-    chartImage.src = chartURL;
-    chartImage.style.display = "inline-block";
   }
 }
 
+chartBtn.addEventListener("click", fetchChart);
+function fetchChart() {
+  const chartKeyColours = document.getElementsByClassName("chartKeyColour");
+  let movieTitleArr = Object.keys(resultsObject); // split title of each movie/tv/person so we can get data for each one
+  let chartType = "bvs"; // vertical bar chart
+  let colourString = colourArray.join("|"); // turn colour array into pipe seperated string for use with api
+  let dataString = "a:" + objectToString(",",movieTitleArr,"data",resultsObject); // get comma seperated string from object
+  let dataLabel = objectToString("|",movieTitleArr,"data",resultsObject);   // get pipe seperated string from object
+  let chartTitle = "";
+  if (radioValue == "movie") {
+    chartTitle = "Net revenue (millions)";
+  } else if (radioValue == "tv") {
+    chartTitle = "Number of episodes";
+  } else {
+    chartTitle = "Age";
+  }
+  if (window.innerWidth < 500) {
+    chartType = "p";
+    dataLabel += `&chdl=${dataLabel}`;
+  }
+  chartImage.src = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
+  chartImage.style.display = "inline-block";
+  [...chartKeyColours].forEach(e => e.style.display = "inline-block") // iterate through chart key colour elements and set display property
+}
+
+/**
+ * 
+ * @param {string} endpoint endpoint we want to query
+ * @param {string} id query
+ * @returns object from endpoint
+ */
+function movieAPIFetch(endpoint, id) {
+  return fetch(
+    `https://api.themoviedb.org/3/${endpoint}/${id}?language=en-US`,
+    queryOptions
+  ).then((response) => response.json())
+  .catch((err) => console.error(err));
+}
+
+/**
+ * 
+ * @param {string} seperator string of the character(s) used to seperate elements. e.g. comma "," or pipe "|"
+ * @param {Array} objectKeys object keys
+ * @param {*} objectData object endpoint we want data from
+ * @param {*} object object we want to extract data from
+ * @returns string
+ */
 function objectToString(seperator,objectKeys,objectData,object) {
   return objectKeys.reduce((acc,curr) => {
       acc += `${object[curr][objectData]}${seperator}`;
