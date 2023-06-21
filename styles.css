@@ -15,6 +15,8 @@
 
 body {
   margin: 1em;
+  position: relative;
+  min-height: 95vh;
 }
 
 /* FORM & FIELDSET & BUTTONS */
@@ -114,7 +116,9 @@ ul {
   display: flex;
   flex-direction: column;
 }
-
+.inline {
+  display: inline;
+}
 /* DIVS */
 @media screen and (min-width: 500px) {
   .containerChart {
@@ -167,4 +171,27 @@ ul {
   border-radius: 10px;
   border: 1px solid;
   margin-left: 0.5em;
+}
+
+footer {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  font-size: 0.7em;
+  width: 100%;
+}
+footer > p {
+  text-align: center;
+}
+#tmdbAttribute {
+  height: fit-content;
+  position: relative;
+  top: 0.5em;
+}
+#tmdbAttribute > img {
+  width: 3.5em;
+  height: auto;
+}
+#results {
+  padding-bottom: 150px;
 }
