@@ -62,11 +62,9 @@ and a package.json file:
         }
 ```
 
-## Planning
-
-## Debugging
-
 ## Future improvements
+
+One potential improvement would be to enhance the security and ease of configuration for accessing the API. Currently, the project relies on an access token stored in a configuration file, which is ignored by version control for security reasons. However, this approach requires each user to obtain their own access token and configure the file manually. To address this, a future improvement could be implementing a more streamlined method, such as using environment variables. This would allow users to set their access token as an environment variable, eliminating the need for manual configuration and enhancing the project's portability and security.
 
 ## Learning outcomes
 
