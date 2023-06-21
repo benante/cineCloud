@@ -29,7 +29,7 @@ const colourArray = [
   "800000",
 ];
 // define root and different queries
-const rootUrl = "https://api.themoviedb.org/3/trending/";
+const rootUrl = "https://api.themoviedb.org/3/";
 const queries = {
   movie: "movie/",
   people: "person/",
@@ -45,260 +45,212 @@ const queryOptions = {
 };
 
 let resultsObject = {}; // used to save relevant info about films from multiple endpoints
+let radioValue
 const chartImage = document.getElementById("chartimage");
-
 // Event listener when form is submitted
 form.addEventListener("submit", (event) => {
-  // moved bulk of this to a function (fetchpopularmovies) so I can use async await
   event.preventDefault();
   resultsObject = {};
   chartImage.style.display = "none"; // hides chart when new data requested
-  // Get radio value
-  loadingPage(loadingDiv, 1950);
-
-  setTimeout(() => {
-    fetchPopularMovies();
-  }, 2000);
+  fetchPopularMovies()
 });
 
 async function fetchPopularMovies() {
-  const radioValue = document.querySelector(
+  loadingDiv.style.display = "block";
+  containerMovieDB.style.display = "none";
+  chartBtn.style.display = "none";
+  radioValue = document.querySelector(
     'input[name="option"]:checked'
   ).value;
-
   // Get dropdown value
   const dropdownValue = document.querySelector("#dropdown").value;
+  let data = await movieAPIFetch("trending",`${queries[radioValue]}${dropdownValue}`)  // gets results from query to moviedb
+  // create an array from the data
+  const resultArray = data.results;
+  //    reset the div container everytime the form is submitted
+  containerMovieDB.innerHTML = "";
+  //   iterate through the elements and display them
+  for (const [i, element] of resultArray.entries()) {
+    // Create button that display name/title
+    const divElement = document.createElement("div");
+    divElement.classList.add = "divElement";
+    const chartKeyColour = document.createElement("div");
+    const button = document.createElement("button");
+    let title = "";
+    // create an object with film id. Will be added to the overall object
+    let movieObj = {
+      id: element.id,
+    };
 
-  await fetch(`${rootUrl}${queries[radioValue]}${dropdownValue}`, queryOptions)
-    // get body in json format
-    .then((response) => response.json())
-    .then((data) => {
-      // create an array from the data
-      const resultArray = data.results;
-      //    reset the div container everytime the form is submitted
-      containerMovieDB.innerHTML = "";
-      //   iterate through the elements and display them
-      resultArray.forEach((element, i) => {
-        // Create button that display name/title
-        const divElement = document.createElement("div");
-        divElement.classList.add = "divElement";
-
-        const chartKeyColour = document.createElement("div");
-        const button = document.createElement("button");
-
-        let title = "";
-
-        // create an object with saving film id will be added to the overall object
-        let movieObj = {
-          id: element.id,
-        };
-
-        // retrieve data according to radioValue
-        if (radioValue == "movie") {
-          title = element.title;
-          button.textContent = element.title;
-        } else {
-          // in this case Tv shows or people
-          title = element.name;
-          button.textContent = element.name;
-        }
-
-        resultsObject[title] = movieObj; // insert object with relative id into resultObjects
-        resultsObject[title].colour = colourArray[i];
-        // console.log(movieObj);
-        containerMovieDB.appendChild(divElement);
-        divElement.appendChild(button);
-        button.appendChild(chartKeyColour);
-
-        chartKeyColour.classList.add("chartKeyColour");
-        chartKeyColour.style.backgroundColor = `#${resultsObject[title].colour}`;
-        // add colour key to each movie this is placeholder should do with a small circle next to button
-        //
-
-        // DEBUG/REFACTOR DONE AND WORKING TILL HERE
-
-        // for each button create relative container and content
-        const paragraph = document.createElement("p");
-        const posterImg = document.createElement("img");
-        let isParagraphVisible = false;
-
-        button.addEventListener("click", () => {
-          if (element.overview) {
-            // If movie or tv
-            posterImg.src = `https://image.tmdb.org/t/p/original${element.poster_path}`;
-            paragraph.textContent = element.overview;
-            //  YOUTUBE
-            const mediaType = element.media_type;
-            fetch(
-              `https://api.themoviedb.org/3/${mediaType}/${element.id}/videos`,
-              queryOptions
-            )
-              .then((res) => res.json())
-              .then((res) => res.results)
-              .then((res) => {
-                const arrayVideos = res;
-                let officialTrailer = arrayVideos.find(
-                  (element) => element.type === "Trailer"
-                );
-                officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
-                const linkYoutube = document.createElement("a");
-                linkYoutube.textContent = "Click here for the trailer";
-                linkYoutube.href = officialTrailer;
-                paragraph.appendChild(linkYoutube);
-              })
-              .catch((err) => console.error(err));
-          } else {
-            fetch(
-              `https://api.themoviedb.org/3/person/${element.id}/combined_credits`,
-              queryOptions
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                let castArray = data.cast;
-
-                if (!castArray.length) {
-                  castArray = data.crew;
-                }
-                const lengthArray = Math.min(10, castArray.length);
-
-                const movieList = castArray
-                  .slice(0, lengthArray)
-                  .map(({ title, release_date }) => {
-                    return `<li>${title} (${release_date.slice(0, 4)})</li>`;
-                  })
-                  .join("");
-                // Update content for buttons without element.overview
-                paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
-                posterImg.src = `https://image.tmdb.org/t/p/original${element.profile_path}`;
-              })
-              .catch((error) => {
-                // Display an error message for the catch error
-                paragraph.textContent = `Error: ${error.message}`;
-              });
-          }
-
-          if (isParagraphVisible) {
-            // Hide the paragraph by removing it
-            divElement.removeChild(paragraph);
-            divElement.removeChild(posterImg);
-            isParagraphVisible = false;
-          } else {
-            // Show the paragraph by appending it
-            divElement.appendChild(paragraph);
-            divElement.appendChild(posterImg);
-            isParagraphVisible = true;
-          }
-        });
-      });
-      chartBtn.style.display = "block";
-
-      revenueChart();
-    })
-
-    .catch((error) => {
-      // Display a general error message for the fetch error
-      containerMovieDB.innerHTML = `<p>Error: ${error.message}</p>`;
-    });
-  function revenueChart() {
-    // gets revenue and budget of each film in result object
-    let movieTitleArr = Object.keys(resultsObject); // make array from movietitles so we can use foreach to fetch further details on each film
-    console.log(movieTitleArr);
-    let mutableRadioValue = radioValue;
-    if (radioValue == "people") {
-      mutableRadioValue = "person";
-    }
-    movieTitleArr.forEach((name) => {
-      // NAME IS UNDEFINED
-      fetch(
-        `https://api.themoviedb.org/3/${mutableRadioValue}/${resultsObject[name].id}?language=en-US`,
-        queryOptions
-      )
-        .then((response) => response.json())
-        .then((response) => {
-          if (radioValue == "movie") {
-            resultsObject[name].data =
-              Math.round((response.revenue - response.budget) / 100000) / 10;
-          } else if (radioValue == "tv") {
-            resultsObject[name].data = response.number_of_episodes;
-            // console.log(resultsObject[name].revenueRatio)
-          } else {
-            resultsObject[name].data = getAge(
-              response.birthday,
-              response.deathday
-            );
-            // console.log(resultsObject[name].revenueRatio)
-          }
-        })
-        .catch((err) => console.error(err));
-    });
-  }
-
-  chartBtn.addEventListener("click", fetchChart);
-  function fetchChart() {
-    const chartKeyColours = document.getElementsByClassName("chartKeyColour");
-
-    // Loop through the chartKeyColour elements and set their display property
-    for (let i = 0; i < chartKeyColours.length; i++) {
-      chartKeyColours[i].style.display = "inline-block";
-    }
-    // creates chart image based on revenue
-    let movieTitleArr = Object.keys(resultsObject); //
-    // await revenueChart(movieTitleArr)
-    let dataLabel = "";
-    let dataString = "a:";
-    let chartTitle = "";
-    let chartType = "bvs";
-    let colourString = colourArray.join("|");
-    // chartType = "bhg"
-    console.log(window.innerWidth);
+    // retrieve data according to radioValue
     if (radioValue == "movie") {
-      chartTitle = "Net revenue (millions)";
-      movieTitleArr.forEach((name) => {
-        // if (resultsObject[name].revenue > 0) {
-        // nameArr += `${name}|`;
-        dataString += `${resultsObject[name].data},`;
-        dataLabel += `${resultsObject[name].data}|`;
-        // revenueLabel+= `$${resultObject[name].revenue}|`;
-        // }
-      });
-    } else if (radioValue == "tv") {
-      chartTitle = "Number of episodes";
-      movieTitleArr.forEach((name) => {
-        if (resultsObject[name].data > 0) {
-          dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`;
-        }
-      });
+      title = element.title;
     } else {
-      // chartType = 'p';
-      chartTitle = "Age";
-      movieTitleArr.forEach((name) => {
-        if (resultsObject[name].data > 0) {
-          dataString += `${resultsObject[name].data},`;
-          dataLabel += `${resultsObject[name].data}|`;
+      title = element.name;
+    }
+    if (radioValue == "people") {
+      movieObj.poster = element.profile_path;
+    }
+    else {
+      movieObj.overview = element.overview;
+      movieObj.poster = element.poster_path;
+    }
+    resultsObject[title] = movieObj; // insert object with relative id into resultObjects
+    resultsObject[title].colour = colourArray[i];
+    
+    button.textContent = title;
+    containerMovieDB.appendChild(divElement);
+    divElement.appendChild(button);
+    button.appendChild(chartKeyColour);
+    chartKeyColour.classList.add("chartKeyColour");
+    chartKeyColour.style.backgroundColor = `#${resultsObject[title].colour}`;
+
+    // DEBUG/REFACTOR DONE AND WORKING TILL HERE
+
+    // for each button create relative container and content
+    const paragraph = document.createElement("p");
+    const posterImg = document.createElement("img");
+    if (!(resultsObject[title].poster == undefined)) {
+      posterImg.src = `https://image.tmdb.org/t/p/original${resultsObject[title].poster}?language=en-US`;
+    }
+    await extraDetails(title,paragraph);
+    let isParagraphVisible = false;
+    button.addEventListener("click", () => {    
+        if (isParagraphVisible) {
+          // Hide the paragraph by removing it
+          divElement.removeChild(paragraph);
+          divElement.removeChild(posterImg);
+          isParagraphVisible = false;
+        } else {
+          // Show the paragraph by appending it
+          divElement.appendChild(paragraph);
+          divElement.appendChild(posterImg);
+          isParagraphVisible = true;
         }
       });
-    }
-    if (window.innerWidth < 500) {
-      chartType = "p";
-      dataLabel += `&chdl=${dataLabel}`;
-    }
-    // console.log(radioValue)
-    const chartURL = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
-    chartImage.src = chartURL;
-    chartImage.style.display = "inline-block";
-    let chartColourIndicator = document.getElementsByClassName(
-      "chartColourIndicator"
+    };
+    loadingDiv.style.display = "none";
+    containerMovieDB.style.display = "grid";
+    chartBtn.style.display = "block";
+}
+
+async function extraDetails(title,paragraph) {
+  if (radioValue == "people") {
+    let res = await movieAPIFetch(
+      `${queries[radioValue]}`,
+      `${resultsObject[title].id}/combined_credits`
     );
-    let rightAdjust = window.innerWidth / 2 + window.innerWidth / 8;
-    console.log(rightAdjust);
-    [...chartColourIndicator].forEach((e) => {
-      e.style.left = `${rightAdjust}px`;
-      e.style.display = "inline-block";
-    });
+    let castArray = res.cast;
+    if (!castArray.length) {
+      castArray = res.crew;
+    }
+    const lengthArray = Math.min(10, castArray.length);
+    const movieList = castArray
+      .slice(0, lengthArray)
+      .map(({ title, release_date }) => {
+        if (title == undefined) return "";
+        if (release_date == undefined) release_date ="";
+        return `<li>${title} (${release_date.slice(0, 4)})</li>`;
+      })
+      .join("");
+    paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`;
+  } else {
+    paragraph.textContent = resultsObject[title].overview;
+    let res = await movieAPIFetch(
+      `${queries[radioValue]}`,
+      `${resultsObject[title].id}/videos`
+    );
+    let officialTrailer = res.results.find(
+      (element) => element.type === "Trailer"
+    );
+    if(officialTrailer) {
+      officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
+      const linkYoutube = document.createElement("a");
+      linkYoutube.textContent = "Click here for the trailer";
+      linkYoutube.href = officialTrailer;
+      paragraph.appendChild(linkYoutube);
+    }
   }
 }
 
+async function revenueChart(movieTitleArr) {
+  for (let name of movieTitleArr) {
+    let response = await movieAPIFetch(
+      `${queries[radioValue]}`,
+      resultsObject[name].id,
+    );
+    if (radioValue == "movie") {
+      resultsObject[name].data =
+        Math.round((response.revenue - response.budget) / 100000) / 10;
+    } else if (radioValue == "tv") {
+      resultsObject[name].data = response.number_of_episodes;
+    } else {
+      resultsObject[name].data = getAge(response.birthday, response.deathday);
+    }
+  }
+}
+
+chartBtn.addEventListener("click", fetchChart);
+async function fetchChart() {
+  const chartKeyColours = document.getElementsByClassName("chartKeyColour");
+  let movieTitleArr = Object.keys(resultsObject); // split title of each movie/tv/person so we can get data for each one
+  await revenueChart(movieTitleArr);
+  let chartType = "bvs"; // vertical bar chart
+  let colourString = colourArray.join("|"); // turn colour array into pipe seperated string for use with api
+  let dataString = "a:" + objectToString(",",movieTitleArr,"data",resultsObject); // get comma seperated string from object
+  let dataLabel = objectToString("|",movieTitleArr,"data",resultsObject);   // get pipe seperated string from object
+  let chartTitle = "";
+  if (radioValue == "movie") {
+    chartTitle = "Net revenue (millions)";
+  } else if (radioValue == "tv") {
+    chartTitle = "Number of episodes";
+  } else {
+    chartTitle = "Age";
+  }
+  if (window.innerWidth < 500) {
+    chartType = "p";
+    dataLabel += `&chdl=${dataLabel}`;
+  }
+  chartImage.src = `https:/image-charts.com/chart?chco=${colourString}&chtt=${chartTitle}&chd=${dataString}&chl=${dataLabel}&chs=999x999&cht=${chartType}&chxt=y`;
+  chartImage.style.display = "inline-block";
+  [...chartKeyColours].forEach(e => e.style.display = "inline-block") // iterate through chart key colour elements and set display property
+}
+
+/**
+ * 
+ * @param {string} endpoint endpoint we want to query
+ * @param {string} id query
+ * @returns object from endpoint
+ */
+function movieAPIFetch(endpoint, id) {
+  return fetch(
+    `${rootUrl}${endpoint}/${id}?language=en-US`,
+    queryOptions
+  ).then((response) => response.json())
+  .catch((err) => console.error(err));
+}
+
+/**
+ * 
+ * @param {string} seperator string of the character(s) used to seperate elements. e.g. comma "," or pipe "|"
+ * @param {Array} objectKeys object keys
+ * @param {*} objectData object endpoint we want data from
+ * @param {*} object object we want to extract data from
+ * @returns string
+ */
+function objectToString(seperator,objectKeys,objectData,object) {
+  return objectKeys.reduce((acc,curr) => {
+      acc += `${object[curr][objectData]}${seperator}`;
+      return acc
+  },"")
+}
+
+/**
+ * 
+ * @param {string} birthDateString date of birth
+ * @param {string} deathDateString date of death or blank string if still alive
+ * @returns 
+ */
 function getAge(birthDateString, deathDateString) {
   let today = 0;
   if (deathDateString) {
@@ -313,12 +265,4 @@ function getAge(birthDateString, deathDateString) {
     age--;
   }
   return age;
-}
-
-function loadingPage(element, time) {
-  element.style.display = "block";
-
-  setTimeout(() => {
-    element.style.display = "none";
-  }, time);
 }
