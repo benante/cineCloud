@@ -58,6 +58,7 @@ form.addEventListener("submit", (event) => {
 async function fetchPopularMovies() {
   loadingDiv.style.display = "block";
   containerMovieDB.style.display = "none";
+  chartBtn.style.display = "none";
   radioValue = document.querySelector(
     'input[name="option"]:checked'
   ).value;
@@ -109,7 +110,9 @@ async function fetchPopularMovies() {
     // for each button create relative container and content
     const paragraph = document.createElement("p");
     const posterImg = document.createElement("img");
-    posterImg.src = `https://image.tmdb.org/t/p/original${resultsObject[title].poster}?language=en-US`;
+    if (!(resultsObject[title].poster == undefined)) {
+      posterImg.src = `https://image.tmdb.org/t/p/original${resultsObject[title].poster}?language=en-US`;
+    }
     if (radioValue == "people") {
       let res = await movieAPIFetch(
         `${queries[radioValue]}`,
@@ -129,6 +132,7 @@ async function fetchPopularMovies() {
         .join("");
       paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`;
     } else {
+      paragraph.textContent = resultsObject[title].overview;
       let res = await movieAPIFetch(
         `${queries[radioValue]}`,
         `${resultsObject[title].id}/videos`
@@ -144,9 +148,8 @@ async function fetchPopularMovies() {
         paragraph.appendChild(linkYoutube);
       }
     }
-
-    button.addEventListener("click", () => {      
-        let isParagraphVisible = false;
+    let isParagraphVisible = false;
+    button.addEventListener("click", () => {    
         if (isParagraphVisible) {
           // Hide the paragraph by removing it
           divElement.removeChild(paragraph);
@@ -257,11 +260,4 @@ function getAge(birthDateString, deathDateString) {
     age--;
   }
   return age;
-}
-
-function loadingPage(element, time) {
-  element.style.display = "block";
-  setTimeout(() => {
-    element.style.display = "none";
-  }, time);
 }
