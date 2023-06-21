@@ -109,6 +109,7 @@ async function fetchPopularMovies() {
     // for each button create relative container and content
     const paragraph = document.createElement("p");
     const posterImg = document.createElement("img");
+    posterImg.src = `https://image.tmdb.org/t/p/original${resultsObject[title].poster}?language=en-US`;
     if (radioValue == "people") {
       let res = await movieAPIFetch(
         `${queries[radioValue]}`,
