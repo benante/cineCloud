@@ -52,13 +52,12 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   resultsObject = {};
   chartImage.style.display = "none"; // hides chart when new data requested
-  loadingPage(loadingDiv, 1950);
-  setTimeout(() => {
-    fetchPopularMovies();
-  }, 2000);
+  fetchPopularMovies()
 });
 
 async function fetchPopularMovies() {
+  loadingDiv.style.display = "block";
+  containerMovieDB.style.display = "none";
   radioValue = document.querySelector(
     'input[name="option"]:checked'
   ).value;
@@ -70,7 +69,7 @@ async function fetchPopularMovies() {
   //    reset the div container everytime the form is submitted
   containerMovieDB.innerHTML = "";
   //   iterate through the elements and display them
-  resultArray.forEach((element, i) => {
+  for (const [i, element] of resultArray.entries()) {
     // Create button that display name/title
     const divElement = document.createElement("div");
     divElement.classList.add = "divElement";
@@ -110,60 +109,42 @@ async function fetchPopularMovies() {
     // for each button create relative container and content
     const paragraph = document.createElement("p");
     const posterImg = document.createElement("img");
+    if (radioValue == "people") {
+      let res = await movieAPIFetch(
+        `${queries[radioValue]}`,
+        `${resultsObject[title].id}/combined_credits`
+      );
+      let castArray = res.cast;
+      if (!castArray.length) {
+        castArray = res.crew;
+      }
+      const lengthArray = Math.min(10, castArray.length);
+      const movieList = castArray
+        .slice(0, lengthArray)
+        .map(({ title, release_date }) => {
+          if (release_date == undefined) release_date ="";
+          return `<li>${title} (${release_date.slice(0, 4)})</li>`;
+        })
+        .join("");
+      paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`;
+    } else {
+      let res = await movieAPIFetch(
+        `${queries[radioValue]}`,
+        `${resultsObject[title].id}/videos`
+      );
+      let officialTrailer = res.results.find(
+        (element) => element.type === "Trailer"
+      );
+      if(officialTrailer) {
+        officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
+        const linkYoutube = document.createElement("a");
+        linkYoutube.textContent = "Click here for the trailer";
+        linkYoutube.href = officialTrailer;
+        paragraph.appendChild(linkYoutube);
+      }
+    }
 
-    button.addEventListener("click", () => {
-      posterImg.src = `https://image.tmdb.org/t/p/original${resultsObject[title].poster}?language=en-US`;
-      if (element.overview) {
-        // If movie or tv
-        paragraph.textContent = resultsObject[title].overview;
-        //  YOUTUBE
-        const mediaType = element.media_type;
-        fetch(
-          `https://api.themoviedb.org/3/${queries[radioValue]}/${resultsObject[title].id}/videos?language=en-US`,
-          queryOptions
-        )
-          .then((res) => res.json())
-          .then((res) => res.results)
-          .then((res) => {
-            const arrayVideos = res;
-            let officialTrailer = arrayVideos.find(
-              (element) => element.type === "Trailer"
-            );
-            officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
-            const linkYoutube = document.createElement("a");
-            linkYoutube.textContent = "Click here for the trailer";
-            linkYoutube.href = officialTrailer;
-            paragraph.appendChild(linkYoutube);
-          })
-          .catch((err) => console.error(err));
-      } else {
-        fetch(
-          `https://api.themoviedb.org/3/person/${element.id}/combined_credits`,
-          queryOptions
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            let castArray = data.cast;
-
-            if (!castArray.length) {
-              castArray = data.crew;
-            }
-            const lengthArray = Math.min(10, castArray.length);
-
-              const movieList = castArray
-                .slice(0, lengthArray)
-                .map(({ title, release_date }) => {
-                  return `<li>${title} (${release_date.slice(0, 4)})</li>`;
-                })
-                .join("");
-              // Update content for buttons without element.overview
-              paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`; // Wrap the movieList in a <ul> element
-            })
-            .catch((error) => {
-              // Display an error message for the catch error
-              paragraph.textContent = `Error: ${error.message}`;
-            });
-        }
+    button.addEventListener("click", () => {      
         let isParagraphVisible = false;
         if (isParagraphVisible) {
           // Hide the paragraph by removing it
@@ -177,7 +158,9 @@ async function fetchPopularMovies() {
           isParagraphVisible = true;
         }
       });
-    });
+    };
+    loadingDiv.style.display = "none"
+    containerMovieDB.style.display = "grid";
     chartBtn.style.display = "block";
 }
 
