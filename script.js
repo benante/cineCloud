@@ -53,14 +53,10 @@ form.addEventListener("submit", (event) => {
   resultsObject = {};
   chartImage.style.display = "none"; // hides chart when new data requested
   loadingEffect(loadingDiv, 2000);
-  setTimeout(() => {
     fetchPopularMovies();
-  }, 2000);
 });
 
 async function fetchPopularMovies() {
-  containerMovieDB.style.display = "none";
-  chartBtn.style.display = "none";
   radioValue = document.querySelector('input[name="option"]:checked').value;
   // Get dropdown value
   const dropdownValue = document.querySelector("#dropdown").value;
@@ -131,8 +127,6 @@ async function fetchPopularMovies() {
       }
     });
   }
-  containerMovieDB.style.display = "grid";
-  chartBtn.style.display = "block";
 }
 
 async function extraDetails(title, paragraph) {
@@ -269,7 +263,11 @@ function getAge(birthDateString, deathDateString) {
 
 function loadingEffect(element, timing) {
   element.style.display = "block";
+  containerMovieDB.style.display = "none";
+  chartBtn.style.display = "none";
   setTimeout(() => {
     element.style.display = "none";
+    containerMovieDB.style.display = "grid";
+    chartBtn.style.display = "block";
   }, timing);
 }
