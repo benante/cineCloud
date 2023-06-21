@@ -59,6 +59,7 @@ form.addEventListener("submit", (event) => {
 });
 
 async function fetchPopularMovies() {
+  document.getElementById("error").innerText = "";
   containerMovieDB.style.display = "none";
   chartBtn.style.display = "none";
   radioValue = document.querySelector('input[name="option"]:checked').value;
@@ -227,7 +228,10 @@ async function fetchChart() {
 function movieAPIFetch(endpoint, id) {
   return fetch(`${rootUrl}${endpoint}/${id}?language=en-US`, queryOptions)
     .then((response) => response.json())
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      document.getElementById("error").innerText = err;
+    });
 }
 
 /**
