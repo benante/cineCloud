@@ -126,6 +126,7 @@ async function fetchPopularMovies() {
       const movieList = castArray
         .slice(0, lengthArray)
         .map(({ title, release_date }) => {
+          if (title == undefined) return "";
           if (release_date == undefined) release_date ="";
           return `<li>${title} (${release_date.slice(0, 4)})</li>`;
         })
