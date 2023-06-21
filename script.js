@@ -113,42 +113,7 @@ async function fetchPopularMovies() {
     if (!(resultsObject[title].poster == undefined)) {
       posterImg.src = `https://image.tmdb.org/t/p/original${resultsObject[title].poster}?language=en-US`;
     }
-    if (radioValue == "people") {
-      let res = await movieAPIFetch(
-        `${queries[radioValue]}`,
-        `${resultsObject[title].id}/combined_credits`
-      );
-      let castArray = res.cast;
-      if (!castArray.length) {
-        castArray = res.crew;
-      }
-      const lengthArray = Math.min(10, castArray.length);
-      const movieList = castArray
-        .slice(0, lengthArray)
-        .map(({ title, release_date }) => {
-          if (title == undefined) return "";
-          if (release_date == undefined) release_date ="";
-          return `<li>${title} (${release_date.slice(0, 4)})</li>`;
-        })
-        .join("");
-      paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`;
-    } else {
-      paragraph.textContent = resultsObject[title].overview;
-      let res = await movieAPIFetch(
-        `${queries[radioValue]}`,
-        `${resultsObject[title].id}/videos`
-      );
-      let officialTrailer = res.results.find(
-        (element) => element.type === "Trailer"
-      );
-      if(officialTrailer) {
-        officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
-        const linkYoutube = document.createElement("a");
-        linkYoutube.textContent = "Click here for the trailer";
-        linkYoutube.href = officialTrailer;
-        paragraph.appendChild(linkYoutube);
-      }
-    }
+    await extraDetails(title,paragraph);
     let isParagraphVisible = false;
     button.addEventListener("click", () => {    
         if (isParagraphVisible) {
@@ -164,9 +129,48 @@ async function fetchPopularMovies() {
         }
       });
     };
-    loadingDiv.style.display = "none"
+    loadingDiv.style.display = "none";
     containerMovieDB.style.display = "grid";
     chartBtn.style.display = "block";
+}
+
+async function extraDetails(title,paragraph) {
+  if (radioValue == "people") {
+    let res = await movieAPIFetch(
+      `${queries[radioValue]}`,
+      `${resultsObject[title].id}/combined_credits`
+    );
+    let castArray = res.cast;
+    if (!castArray.length) {
+      castArray = res.crew;
+    }
+    const lengthArray = Math.min(10, castArray.length);
+    const movieList = castArray
+      .slice(0, lengthArray)
+      .map(({ title, release_date }) => {
+        if (title == undefined) return "";
+        if (release_date == undefined) release_date ="";
+        return `<li>${title} (${release_date.slice(0, 4)})</li>`;
+      })
+      .join("");
+    paragraph.innerHTML = `<p>Mainly known for:</p><ul>${movieList}</ul>`;
+  } else {
+    paragraph.textContent = resultsObject[title].overview;
+    let res = await movieAPIFetch(
+      `${queries[radioValue]}`,
+      `${resultsObject[title].id}/videos`
+    );
+    let officialTrailer = res.results.find(
+      (element) => element.type === "Trailer"
+    );
+    if(officialTrailer) {
+      officialTrailer = `https://www.youtube.com/watch?v=${officialTrailer.key}`;
+      const linkYoutube = document.createElement("a");
+      linkYoutube.textContent = "Click here for the trailer";
+      linkYoutube.href = officialTrailer;
+      paragraph.appendChild(linkYoutube);
+    }
+  }
 }
 
 async function revenueChart(movieTitleArr) {
